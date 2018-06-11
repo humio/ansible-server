@@ -27,7 +27,7 @@
 - name: Download Humio jar
   get_url:
     url: "https://repo.humio.com/repository/maven-public/com/humio/server/{{ humio_version }}/server-{{ humio_version }}.jar"
-    dest: /usr/lib/humio/server-1.0.67.jar
+    dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
   notify: Restart Humio
 
 - name: Humio configuration file
