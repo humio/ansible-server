@@ -1,46 +1,47 @@
 ---
+- name: Wait for Zookeeper to become available
+  wait_for:
+    host: "{{ zookeeper_host }}"
+    port: "{{ zookeeper_port }}"
+    delay: 5
+    timeout: 15
 
-- user:
-    name: kafka
+- name: Kafka configuration
+  copy:
+    content: |
+      broker.id=0
+      listeners=PLAINTEXT://{{ kafka_host }}:{{ kafka_port }}
+      replica.fetch.max.bytes=104857600
+      message.max.bytes=104857600
+      compression.type=producer
+      log.dirs=/var/log/kafka
+      log.retention.hours=48
+      log.retention.check.interval.ms=300000
+      auto.create.topics.enable=false
+      unclean.leader.election.enable=false
+      zookeeper.connect={{ zookeeper_host }}:{{ zookeeper_port }}
+    dest: /etc/kafka/server.properties
+  notify: Restart Kafka
 
-- name: Install Kafka
-  unarchive:
-    src: http://mirrors.ae-online.de/apache/kafka/1.0.1/kafka_2.12-1.0.1.tgz
-    dest: /usr/lib/
-    remote_src: yes
+- name: Create Kafka SystemD unit configuration
+  copy:
+    content: |
+      [Unit]
+        Description=Kafka Service
+        Requires=zookeeper.service
+        After=zookeeper.service
 
-- name: Link kafka
-  file:
-    src: /usr/lib/kafka_2.12-1.0.1
-    dest: /usr/lib/kafka
-    state: link
-    owner: kafka
+      [Service]
+        User=kafka
+        ExecStart=/usr/lib/kafka/bin/kafka-server-start.sh /etc/kafka/server.properties
 
-- name: Create config directories
-  file:
-    path: "/etc/{{ item }}"
-    state: directory
-  with_items:
-    - kafka
-    - zookeeper
+      [Install]
+        WantedBy=default.target
+    dest: /etc/systemd/system/kafka.service
+  notify: Restart Kafka
 
-- name: Create log directories
-  file:
-    path: "/var/log/{{ item }}"
-    state: directory
-    owner: kafka
-  with_items:
-    - kafka
-    - zookeeper
-
-- name: Create data directories
-  file:
-    path: "/var/{{ item }}/data"
-    state: directory
-    owner: kafka
-  with_items:
-    - kafka
-    - zookeeper
-
-- import_tasks: zookeeper.yml
-- import_tasks: kafka.yml
+- name: Enable Kafka Service
+  service:
+    name: "kafka"
+    enabled: yes
+    state: started

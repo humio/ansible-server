@@ -1,5 +1,11 @@
 ---
 
+- name: Wait for Kafka to become available
+  wait_for:
+    host: "{{ kafka_host }}"
+    port: "{{ kafka_port }}"
+    timeout: 15
+
 - name: Create Humio directories
   file:
     path: "{{ item }}"
@@ -20,7 +26,7 @@
 
 - name: Download Humio jar
   get_url:
-    url: https://repo.humio.com/repository/maven-public/com/humio/server/1.0.67/server-1.0.67.jar
+    url: "https://repo.humio.com/repository/maven-public/com/humio/server/{{ humio_version }}/server-{{ humio_version }}.jar"
     dest: /usr/lib/humio/server-1.0.67.jar
   notify: Restart Humio
 
@@ -28,6 +34,9 @@
   copy:
     content: |
       DIRECTORY=/var/humio/data
+      KAFKA_SERVERS={{kafka_host }}:{{ kafka_port}}
+      ZOOKEEPER_URL={{ zookeeper_host }}:{{ zookeeper_port }}
+      ELASTIC_PORT={{ humio_elastic_port }}
     dest: /etc/humio/server.conf
   notify: Restart Humio
 
@@ -43,7 +52,7 @@
         User=humio
         EnvironmentFile=/etc/humio/server.conf
         WorkingDirectory=/var/humio
-        ExecStart=/usr/bin/java -Xss2M -XX:MaxDirectMemorySize=32G -Dhumio.auditlog.dir=/var/log/humio -Dhumio.debuglog.dir=/var/log/humio -jar /usr/lib/humio/server-1.0.67.jar
+        ExecStart=/usr/bin/java -Xss2M -XX:MaxDirectMemorySize=32G -Dhumio.auditlog.dir=/var/log/humio -Dhumio.debuglog.dir=/var/log/humio -jar /usr/lib/humio/server-{{ humio_version }}.jar
 
       [Install]
         WantedBy=default.target

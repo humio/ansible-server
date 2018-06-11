@@ -4,7 +4,7 @@
   copy:
     content: |
       dataDir=/var/zookeeper/data
-      clientPort=2181
+      clientPort={{ zookeeper_port }}
       maxClientCnxns=0
       dataLogDir=/var/log/zookeeper/
     dest: /etc/zookeeper/server.properties
@@ -22,7 +22,6 @@
       [Service]
         User=kafka
       #  Group=zookeeper
-      # test
         ExecStart=/usr/lib/kafka/bin/zookeeper-server-start.sh /etc/zookeeper/server.properties
 
       [Install]

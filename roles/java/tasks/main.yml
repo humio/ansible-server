@@ -2,6 +2,6 @@
 
 - name: install JDK
   yum:
-    name: https://cdn.azul.com/zulu/bin/zulu9.0.7.1-jdk9.0.7-linux.x86_64.rpm
+    name: "https://cdn.azul.com/zulu/bin/zulu{{ java_version }}.{{ java_zulu_build }}-jdk{{ java_version }}-linux.x86_64.rpm"
     state: present
 

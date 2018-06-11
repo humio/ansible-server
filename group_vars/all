@@ -1,0 +1,15 @@
+java_version: 9.0.7
+java_zulu_build: 1
+
+kafka_scala_version: 2.12
+kafka_version: 1.0.1
+
+zookeeper_host: localhost
+zookeeper_port: 2181
+
+kafka_host: localhost
+kafka_port: 9092
+
+humio_version: 1.0.67
+humio_port: 8080
+humio_elastic_port: 9200
