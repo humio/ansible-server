@@ -1,0 +1,37 @@
+---
+
+- name: Zookeeper configuration
+  copy:
+    content: |
+      dataDir=/var/zookeeper/data
+      clientPort=2181
+      maxClientCnxns=0
+      dataLogDir=/var/log/zookeeper/
+    dest: /etc/zookeeper/server.properties
+  notify: Restart Zookeeper
+
+- name: Create Zookeeper SystemD unit configuration
+  copy:
+    content: |
+      [Unit]
+        Description=ZooKeeper Service
+        Documentation=http://zookeeper.apache.org
+        Requires=network.target
+        After=network.target
+
+      [Service]
+        User=kafka
+      #  Group=zookeeper
+      # test
+        ExecStart=/usr/lib/kafka/bin/zookeeper-server-start.sh /etc/zookeeper/server.properties
+
+      [Install]
+        WantedBy=default.target
+    dest: /etc/systemd/system/zookeeper.service
+  notify: Restart Zookeeper
+
+- name: Enable Zookeeper service
+  service:
+    name: "zookeeper"
+    enabled: yes
+    state: started

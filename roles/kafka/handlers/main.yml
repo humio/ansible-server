@@ -1,0 +1,25 @@
+- name: Restart Zookeeper service
+  service:
+    name: zookeeper
+    daemon_reload: yes
+    state: restarted
+  listen: Restart Zookeeper
+
+- name: Wait for Zookeeper to become available
+  wait_for:
+    port: 2181
+    timeout: 15
+  listen: Restart Zookeeper
+
+- name: Restart Kafka SystemD service
+  service:
+    name: kafka
+    daemon_reload: yes
+    state: restarted
+  listen: Restart Kafka
+
+- name: Wait for Kafka to become available
+  wait_for:
+    port: 9092
+    timeout: 15
+  listen: Restart Kafka

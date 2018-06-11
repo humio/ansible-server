@@ -1,0 +1,46 @@
+---
+
+- user:
+    name: kafka
+
+- name: Install Kafka
+  unarchive:
+    src: http://mirrors.ae-online.de/apache/kafka/1.0.1/kafka_2.12-1.0.1.tgz
+    dest: /usr/lib/
+    remote_src: yes
+
+- name: Link kafka
+  file:
+    src: /usr/lib/kafka_2.12-1.0.1
+    dest: /usr/lib/kafka
+    state: link
+    owner: kafka
+
+- name: Create config directories
+  file:
+    path: "/etc/{{ item }}"
+    state: directory
+  with_items:
+    - kafka
+    - zookeeper
+
+- name: Create log directories
+  file:
+    path: "/var/log/{{ item }}"
+    state: directory
+    owner: kafka
+  with_items:
+    - kafka
+    - zookeeper
+
+- name: Create data directories
+  file:
+    path: "/var/{{ item }}/data"
+    state: directory
+    owner: kafka
+  with_items:
+    - kafka
+    - zookeeper
+
+- import_tasks: zookeeper.yml
+- import_tasks: kafka.yml

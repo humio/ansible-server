@@ -1,0 +1,41 @@
+---
+
+- name: Kafka configuration
+  copy:
+    content: |
+      broker.id=0
+      listeners=PLAINTEXT://localhost:9092
+      replica.fetch.max.bytes=104857600
+      message.max.bytes=104857600
+      compression.type=producer
+      log.dirs=/var/log/kafka
+      log.retention.hours=48
+      log.retention.check.interval.ms=300000
+      auto.create.topics.enable=false
+      unclean.leader.election.enable=false
+      zookeeper.connect=localhost:2181
+    dest: /etc/kafka/server.properties
+  notify: Restart Kafka
+
+- name: Create Kafka SystemD unit configuration
+  copy:
+    content: |
+      [Unit]
+        Description=Kafka Service
+        Requires=zookeeper.service
+        After=zookeeper.service
+
+      [Service]
+        User=kafka
+        ExecStart=/usr/lib/kafka/bin/kafka-server-start.sh /etc/kafka/server.properties
+
+      [Install]
+        WantedBy=default.target
+    dest: /etc/systemd/system/kafka.service
+  notify: Restart Kafka
+
+- name: Enable Kafka Services
+  service:
+    name: "kafka"
+    enabled: yes
+    state: started

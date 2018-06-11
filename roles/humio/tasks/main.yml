@@ -1,0 +1,57 @@
+---
+
+- name: Create Humio directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /usr/lib/humio
+    - /etc/humio
+
+- name: Create humio user
+  user:
+    name: humio
+
+- name: Create /var/humio/data
+  file:
+    path: /var/humio/data
+    state: directory
+    owner: humio
+
+- name: Download Humio jar
+  get_url:
+    url: https://repo.humio.com/repository/maven-public/com/humio/server/1.0.67/server-1.0.67.jar
+    dest: /usr/lib/humio/server-1.0.67.jar
+  notify: Restart Humio
+
+- name: Humio configuration file
+  copy:
+    content: |
+      DIRECTORY=/var/humio/data
+    dest: /etc/humio/server.conf
+  notify: Restart Humio
+
+- name: Create Humio SystemD unit configuration
+  copy:
+    content: |
+      [Unit]
+        Description=Humio service
+        Requires=kafka.service
+        After=kafka.service
+
+      [Service]
+        User=humio
+        EnvironmentFile=/etc/humio/server.conf
+        WorkingDirectory=/var/humio
+        ExecStart=/usr/bin/java -Xss2M -XX:MaxDirectMemorySize=32G -Dhumio.auditlog.dir=/var/log/humio -Dhumio.debuglog.dir=/var/log/humio -jar /usr/lib/humio/server-1.0.67.jar
+
+      [Install]
+        WantedBy=default.target
+    dest: /etc/systemd/system/humio.service
+  notify: Restart Humio
+
+- name: Enable Humio service
+  service:
+    name: humio
+    enabled: yes
+    state: started

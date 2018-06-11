@@ -1,0 +1,10 @@
+- service:
+    name: humio
+    daemon_reload: yes
+    state: restarted
+  listen: Restart Humio
+
+- wait_for:
+    port: 8080
+    timeout: 15
+  listen: Restart Humio
