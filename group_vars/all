@@ -10,6 +10,7 @@ zookeeper_port: 2181
 kafka_host: localhost
 kafka_port: 9092
 
-humio_version: 1.0.68
+humio_version: 1.0.69
 humio_port: 8080
 humio_elastic_port: 9200
+humio_instance_index: 0

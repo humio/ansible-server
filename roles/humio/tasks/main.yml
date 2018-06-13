@@ -1,11 +1,5 @@
 ---
 
-- name: Wait for Kafka to become available
-  wait_for:
-    host: "{{ kafka_host }}"
-    port: "{{ kafka_port }}"
-    timeout: 15
-
 - name: Create Humio directories
   file:
     path: "{{ item }}"
@@ -20,9 +14,10 @@
 
 - name: Create /var/humio/data
   file:
-    path: /var/humio/data
+    path: /var/humio/data/{{ humio_host_id }}-{{item}}
     state: directory
     owner: humio
+  with_sequence: start=0 end=0
 
 - name: Download Humio jar
   get_url:
@@ -33,11 +28,16 @@
 - name: Humio configuration file
   copy:
     content: |
-      DIRECTORY=/var/humio/data
-      KAFKA_SERVERS={{kafka_host }}:{{ kafka_port}}
-      ZOOKEEPER_URL={{ zookeeper_host }}:{{ zookeeper_port }}
-      ELASTIC_PORT={{ humio_elastic_port }}
-    dest: /etc/humio/server.conf
+      DIRECTORY=/var/humio/data/{{ humio_host_id }}-{{ item }}
+      HUMIO_AUDITLOG_DIR=/var/log/humio/{{ item }}
+      HUMIO_DEBUGLOG_DIR=/var/log/humio/{{ item }}
+      HUMIO_PORT={{ 8080 + item|int }}
+      ELASTIC_PORT={{ 9200 + item|int }}
+      KAFKA_SERVERS={{ groups['kafkas'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join(':9092,') }}:9092
+      ZOOKEEPER_URL={{ groups['zookeepers'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join(':2181,') }}:2181
+      EXTERNAL_URL=http://{{ ansible_default_ipv4['address'] }}:{{ 8080 + item|int }}
+    dest: "/etc/humio/server_{{ item }}.conf"
+  with_sequence: start=0 end={{ humio_instance_index }}
   notify: Restart Humio
 
 - name: Create Humio SystemD unit configuration
@@ -50,17 +50,18 @@
 
       [Service]
         User=humio
-        EnvironmentFile=/etc/humio/server.conf
+        EnvironmentFile=/etc/humio/server_%i.conf
         WorkingDirectory=/var/humio
-        ExecStart=/usr/bin/java -Xss2M -XX:MaxDirectMemorySize=32G -Dhumio.auditlog.dir=/var/log/humio -Dhumio.debuglog.dir=/var/log/humio -jar /usr/lib/humio/server-{{ humio_version }}.jar
+        ExecStart=/usr/bin/java -Xss2M -XX:MaxDirectMemorySize=32G -Dhumio.auditlog.dir=${HUMIO_AUDITLOG_DIR} -Dhumio.debuglog.dir=${HUMIO_DEBUGLOG_DIR} -jar /usr/lib/humio/server-{{ humio_version }}.jar
 
       [Install]
         WantedBy=default.target
-    dest: /etc/systemd/system/humio.service
+    dest: /etc/systemd/system/humio@.service
   notify: Restart Humio
 
 - name: Enable Humio service
   service:
-    name: humio
+    name: "humio@{{ item }}"
     enabled: yes
     state: started
+  with_sequence: start=0 end={{ humio_instance_index }}

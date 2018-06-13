@@ -1,25 +1,21 @@
 ---
-- name: Wait for Zookeeper to become available
-  wait_for:
-    host: "{{ zookeeper_host }}"
-    port: "{{ zookeeper_port }}"
-    delay: 5
-    timeout: 15
 
 - name: Kafka configuration
   copy:
     content: |
-      broker.id=0
-      listeners=PLAINTEXT://{{ kafka_host }}:{{ kafka_port }}
+      broker.id={{ kafka_broker_id }}
+      log.dirs=/var/log/kafka
+      zookeeper.connect={{ groups['zookeepers'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join(':2181,') }}:2181
+      listeners=PLAINTEXT://{{ ansible_default_ipv4.address }}:9092
       replica.fetch.max.bytes=104857600
       message.max.bytes=104857600
       compression.type=producer
-      log.dirs=/var/log/kafka
+      num.partitions=1
       log.retention.hours=48
       log.retention.check.interval.ms=300000
-      auto.create.topics.enable=false
       unclean.leader.election.enable=false
-      zookeeper.connect={{ zookeeper_host }}:{{ zookeeper_port }}
+      broker.id.generation.enable=false
+      auto.create.topics.enable=false
     dest: /etc/kafka/server.properties
   notify: Restart Kafka
 

@@ -1,5 +1,6 @@
 - service:
-    name: humio
+    name: "humio@{{ item }}"
     daemon_reload: yes
     state: restarted
   listen: Restart Humio
+  with_sequence: start=0 end={{ humio_instance_index }}

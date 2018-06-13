@@ -1,0 +1,15 @@
+---
+- hosts: zookeepers
+  become: true
+  roles:
+    - zookeeper
+
+- hosts: kafkas
+  become: true
+  roles:
+    - kafka
+
+- hosts: humios
+  become: true
+  roles:
+    - humio

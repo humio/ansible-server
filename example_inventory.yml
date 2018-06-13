@@ -1,0 +1,53 @@
+all:
+  hosts:
+    humio0:
+      ansible_host: "192.168.151.10"
+      zookeeper_id: 0
+      kafka_broker_id: 1
+      humio_host_id: 0
+    humio1:
+      ansible_host: "192.168.151.11"
+      zookeeper_id: 1
+      kafka_broker_id: 2
+      humio_host_id: 1
+    humio2:
+      ansible_host: "192.168.151.12"
+      zookeeper_id: 2
+      kafka_broker_id: 3
+      humio_host_id: 2
+    humio3:
+      ansible_host: "192.168.151.13"
+      humio_host_id: 3
+    humio4:
+      ansible_host: "192.168.151.14"
+      humio_host_id: 4
+    humio5:
+      ansible_host: "192.168.151.15"
+      humio_host_id: 5
+    humio6:
+      ansible_host: "192.168.151.16"
+      humio_host_id: 6
+    humio7:
+      ansible_host: "192.168.151.17"
+      humio_host_id: 7
+  children:
+    zookeepers:
+      hosts:
+        humio0:
+        humio1:
+        humio2:
+    kafkas:
+      hosts:
+        humio0:
+        humio1:
+        humio2:
+    humios:
+      hosts:
+        humio0:
+        humio1:
+        humio2:
+        humio3:
+        humio4:
+        humio5:
+        humio6:
+        humio7:

@@ -1,12 +1,28 @@
 ---
 
+- name: Zookeeper MyID file
+  copy:
+    content: |
+      {{ zookeeper_id }}
+    dest: /var/zookeeper/data/myid
+  notify: Restart Zookeeper
+
 - name: Zookeeper configuration
   copy:
     content: |
       dataDir=/var/zookeeper/data
       clientPort={{ zookeeper_port }}
+      clientPortAddress={{ ansible_default_ipv4['address'] }}
       maxClientCnxns=0
       dataLogDir=/var/log/zookeeper/
+      tickTime=2000
+      initLimit=5
+      syncLimit=2
+      {% for host in groups['zookeepers'] %}
+      {% if 'ansible_default_ipv4' in hostvars[host] %}
+      server.{{ hostvars[host]['zookeeper_id'] }}={{ hostvars[host]['ansible_default_ipv4']['address'] }}:2888:3888
+      {% endif %}
+      {% endfor %}
     dest: /etc/zookeeper/server.properties
   notify: Restart Zookeeper
 
