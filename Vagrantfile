@@ -18,7 +18,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "ansible" do |ansible|
       ansible.playbook = "cluster.yml"
-      ansible.verbose = "v"
       ansible.groups = {
       	"zookeepers" => ["humio[0:2]"],
       	"kafkas" => ["humio[0:2]"],

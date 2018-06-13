@@ -11,5 +11,6 @@
 
 - hosts: humios
   become: true
+  serial: 1
   roles:
     - humio
