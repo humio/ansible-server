@@ -1,0 +1,17 @@
+---
+- name: Create Ansible facts directory
+  file:
+    path: "/etc/ansible/facts.d"
+    state: "directory"
+
+- name: CPU sockets fact
+  copy:
+    content: |
+      #!/bin/bash
+      export LC_ALL=en_GB.UTF8
+      /usr/bin/lscpu | grep '^NUMA node[0-9]' | sed -r 's/^NUMA node(.*) CPU\(s\):\s+(.*)/[\1]\nvcpus=\2\n/'
+    dest: "/etc/ansible/facts.d/cpusockets.fact"
+    mode: "0755"
+  notify: Collect facts
+
+- meta: flush_handlers

@@ -1,4 +1,11 @@
 ---
+- import_tasks: custom_facts.yml
+
+- name: socketfile
+  copy:
+    content: "{{ item.value.vcpus }}"
+    dest: "/home/vagrant/{{ item.key }}"
+  with_dict: "{{ ansible_local.cpusockets }}"
 
 - name: Create Humio directories
   file:
@@ -14,10 +21,10 @@
 
 - name: Create /var/humio/data
   file:
-    path: /var/humio/data/{{ humio_host_id }}-{{item}}
+    path: /var/humio/data/{{ humio_host_id }}-{{ item.key }}
     state: directory
     owner: humio
-  with_sequence: start=0 end=0
+  with_dict: "{{ ansible_local.cpusockets }}"
 
 - name: Download Humio jar
   get_url:
@@ -28,19 +35,19 @@
 - name: Humio configuration file
   copy:
     content: |
-      DIRECTORY=/var/humio/data/{{ humio_host_id }}-{{ item }}
-      HUMIO_AUDITLOG_DIR=/var/log/humio/{{ item }}
-      HUMIO_DEBUGLOG_DIR=/var/log/humio/{{ item }}
-      HUMIO_PORT={{ 8080 + item|int }}
-      ELASTIC_PORT={{ 9200 + item|int }}
+      DIRECTORY=/var/humio/data/{{ humio_host_id }}-{{ item.key }}
+      HUMIO_AUDITLOG_DIR=/var/log/humio/{{ item.key }}
+      HUMIO_DEBUGLOG_DIR=/var/log/humio/{{ item.key }}
+      HUMIO_PORT={{ 8080 + item.key|int }}
+      ELASTIC_PORT={{ 9200 + item.key|int }}
       KAFKA_SERVERS={{ groups['kafkas'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join(':9092,') }}:9092
       ZOOKEEPER_URL={{ groups['zookeepers'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join(':2181,') }}:2181
-      EXTERNAL_URL=http://{{ ansible_default_ipv4['address'] }}:{{ 8080 + item|int }}
-    dest: "/etc/humio/server_{{ item }}.conf"
-  with_sequence: start=0 end={{ humio_instance_index }}
+      EXTERNAL_URL=http://{{ ansible_default_ipv4['address'] }}:{{ 8080 + item.key|int }}
+    dest: "/etc/humio/server_{{ item.key }}.conf"
+  with_dict: "{{ ansible_local.cpusockets }}"
   notify: Restart Humio
 
-- name: Create Humio SystemD unit configuration
+- name: Create Humio SystemD template configuration
   copy:
     content: |
       [Unit]
@@ -59,9 +66,24 @@
     dest: /etc/systemd/system/humio@.service
   notify: Restart Humio
 
+- name: SystemD template override dirs
+  file:
+    path: "/etc/systemd/system/humio@{{ item.key }}.service.d"
+    state: directory
+  with_dict: "{{ ansible_local.cpusockets }}"
+
+- name: Create Humio SystemD unit configuration
+  copy:
+    content: |
+      [Service]
+        CPUAffinity={{ item.value.vcpus }}
+    dest: "/etc/systemd/system/humio@{{ item.key }}.service.d/cpuaffinity.conf"
+  with_dict: "{{ ansible_local.cpusockets }}"
+  notify: Restart Humio
+
 - name: Enable Humio service
   service:
-    name: "humio@{{ item }}"
+    name: "humio@{{ item.key }}"
     enabled: yes
     state: started
-  with_sequence: start=0 end={{ humio_instance_index }}
+  with_dict: "{{ ansible_local.cpusockets }}"

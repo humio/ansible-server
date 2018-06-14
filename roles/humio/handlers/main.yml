@@ -1,6 +1,10 @@
+---
+- setup: ~
+  listen: Collect facts
+
 - service:
-    name: "humio@{{ item }}"
+    name: "humio@{{ item.key }}"
     daemon_reload: yes
     state: restarted
   listen: Restart Humio
-  with_sequence: start=0 end={{ humio_instance_index }}
+  with_dict: "{{ ansible_local.cpusockets }}"
