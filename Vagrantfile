@@ -4,7 +4,6 @@
 Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
   config.vm.box = "bento/centos-7.5"
-  config.vm.box_version = "201805.15.0"
 
   config.vm.provider "vmware_desktop" do |v|
     v.vmx["memsize"] = "4096"

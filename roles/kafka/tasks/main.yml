@@ -4,7 +4,6 @@
   copy:
     content: |
       broker.id={{ kafka_broker_id }}
-      log.dirs=/var/log/kafka
       zookeeper.connect={{ groups['zookeepers'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join(':2181,') }}:2181
       listeners=PLAINTEXT://{{ ansible_default_ipv4.address }}:9092
       replica.fetch.max.bytes=104857600
@@ -28,6 +27,7 @@
         After=zookeeper.service
 
       [Service]
+        Environment=LOG_DIR=/var/log/kafka
         User=kafka
         ExecStart=/usr/lib/kafka/bin/kafka-server-start.sh /etc/kafka/server.properties
 
