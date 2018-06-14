@@ -1,4 +1,5 @@
 java_version: 9.0.7
+java_zulu_mirror: https://cdn.azul.com/zulu/bin
 java_zulu_build: 1
 
 kafka_scala_version: 2.12
@@ -8,10 +9,12 @@ zookeeper_host: localhost
 zookeeper_port: 2181
 zookeeper_id: 1
 
+kafka_mirror: http://mirrors.ae-online.de/apache/kafka
 kafka_host: localhost
 kafka_port: 9092
 kafka_broker_id: 0
 
+humio_mirror: https://repo.humio.com/repository/maven-public
 humio_version: 1.0.69
 humio_port: 8080
 humio_elastic_port: 9200
