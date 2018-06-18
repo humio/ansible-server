@@ -1,4 +1,6 @@
-# Deploy Humio with ansible
+<img align="right" src="logo.svg" style="width: 160px" />
+
+# Deploy Humio with Ansible
 
 ## Running locally with Vagrant
 
