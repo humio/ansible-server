@@ -1,4 +1,4 @@
-<img align="right" src="logo.svg" style="width: 160px" />
+<img align="right" src="logo.svg" width="160px" />
 
 # Deploy Humio with Ansible
 
