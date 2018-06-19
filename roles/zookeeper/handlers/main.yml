@@ -1,6 +1,0 @@
-- name: Restart Zookeeper service
-  service:
-    name: zookeeper
-    daemon_reload: yes
-    state: restarted
-  listen: Restart Zookeeper

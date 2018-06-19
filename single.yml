@@ -1,9 +1,0 @@
----
-- name: Humio single host setup
-  hosts: all
-  become: true
-  roles:
-    - zookeeper
-    - kafka
-    - humio
-  

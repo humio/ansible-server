@@ -1,6 +1,0 @@
-- name: Restart Kafka SystemD service
-  service:
-    name: kafka
-    daemon_reload: yes
-    state: restarted
-  listen: Restart Kafka
