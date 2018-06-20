@@ -1,12 +1,6 @@
 ---
 - import_tasks: custom_facts.yml
 
-- name: socketfile
-  copy:
-    content: "{{ item.value.vcpus }}"
-    dest: "/home/vagrant/{{ item.key }}"
-  with_dict: "{{ ansible_local.cpusockets }}"
-
 - name: Create Humio directories
   file:
     path: "{{ item }}"
@@ -15,15 +9,15 @@
     - /usr/lib/humio
     - /etc/humio
 
-- name: Create humio user
-  user:
-    name: humio
+- group: name=humio system=yes
+- user: name=humio system=yes group=humio
 
-- name: Create /var/humio/data
+- name: Create /var/humio/data directories
   file:
     path: /var/humio/data/{{ humio_host_id }}-{{ item.key }}
     state: directory
     owner: humio
+    group: humio
   with_dict: "{{ ansible_local.cpusockets }}"
 
 - name: Download Humio jar
@@ -33,37 +27,15 @@
   notify: Restart Humio
 
 - name: Humio configuration file
-  copy:
-    content: |
-      DIRECTORY=/var/humio/data/{{ humio_host_id }}-{{ item.key }}
-      HUMIO_AUDITLOG_DIR=/var/log/humio/{{ item.key }}
-      HUMIO_DEBUGLOG_DIR=/var/log/humio/{{ item.key }}
-      HUMIO_PORT={{ 8080 + item.key|int }}
-      ELASTIC_PORT={{ 9200 + item.key|int }}
-      KAFKA_SERVERS={{ groups['kafkas'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join(':9092,') }}:9092
-      ZOOKEEPER_URL={{ groups['zookeepers'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join(':2181,') }}:2181
-      EXTERNAL_URL=http://{{ ansible_default_ipv4['address'] }}:{{ 8080 + item.key|int }}
+  template:
+    src: server.conf.j2
     dest: "/etc/humio/server_{{ item.key }}.conf"
   with_dict: "{{ ansible_local.cpusockets }}"
   notify: Restart Humio
 
 - name: Create Humio SystemD template configuration
-  copy:
-    content: |
-      [Unit]
-        Description=Humio service
-        Requires=kafka.service
-        After=kafka.service
-
-      [Service]
-        User=humio
-        LimitNOFILE=250000:250000
-        EnvironmentFile=/etc/humio/server_%i.conf
-        WorkingDirectory=/var/humio
-        ExecStart=/usr/bin/java -Xss2M -XX:MaxDirectMemorySize=32G -Dhumio.auditlog.dir=${HUMIO_AUDITLOG_DIR} -Dhumio.debuglog.dir=${HUMIO_DEBUGLOG_DIR} -jar /usr/lib/humio/server-{{ humio_version }}.jar
-
-      [Install]
-        WantedBy=default.target
+  template:
+    src: "humio@.service.j2"
     dest: /etc/systemd/system/humio@.service
   notify: Restart Humio
 
@@ -74,10 +46,8 @@
   with_dict: "{{ ansible_local.cpusockets }}"
 
 - name: Create Humio SystemD unit configuration
-  copy:
-    content: |
-      [Service]
-        CPUAffinity={{ item.value.vcpus }}
+  template:
+    src: "cpuaffinity.conf.j2"
     dest: "/etc/systemd/system/humio@{{ item.key }}.service.d/cpuaffinity.conf"
   with_dict: "{{ ansible_local.cpusockets }}"
   notify: Restart Humio

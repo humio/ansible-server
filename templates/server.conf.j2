@@ -1,0 +1,13 @@
+#jinja2: trim_blocks:False
+DIRECTORY=/var/humio/data/{{ humio_host_id }}-{{ item.key }}
+HUMIO_AUDITLOG_DIR=/var/log/humio/{{ item.key }}
+HUMIO_DEBUGLOG_DIR=/var/log/humio/{{ item.key }}
+HUMIO_PORT={{ 8080 + item.key|int }}
+ELASTIC_PORT={{ 9200 + item.key|int }}
+ZOOKEEPER_URL={% for host in zookeeper_hosts %}{{ host.ip }}:{{ host.port | default('2181') }}{% if not loop.last %},{% endif %}{% endfor %}
+KAFKA_SERVERS={% for host in kafka_hosts %}{{ host.ip }}:{{ host.port | default('9092') }}{% if not loop.last %},{% endif %}{% endfor %}
+EXTERNAL_URL=http://{{ ansible_default_ipv4['address'] }}:{{ 8080 + item.key|int }}
+PUBLIC_URL={{ humio_public_url }}
+
+HUMIO_SOCKET_BIND={{ humio_socket_bind }}
+HUMIO_HTTP_BIND={{ humio_http_bind }}

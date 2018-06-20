@@ -1,62 +1,56 @@
-<img align="right" src="logo.svg" width="160px" />
+ansible-humio
+=========
 
-# Deploy Humio with Ansible
+Installer for Humio.
+Current features
+- Launch one Humio instance per CPU socket
 
-## Running locally with Vagrant
+Requirements
+------------
 
-Make sure you have [Vagrant](https://vagrantup.com) installed.
+A running Zookeeper and Kafka installation.
 
-Then run the following command
-
-```bash
-$ vagrant up
-```
-
-Humio is now running on the primary network adapter, i.e. http://192.168.150.130:8080
-
-## Deploying a single node instance
-
-Make sure you have [Ansible](https://www.ansible.com) installed.
-
-Create a new inventory file, i.e.
+Role Variables
+--------------
 
 ```yaml
-all:
-  hosts:
-    humio.example.com:
-      zookeeper_id: 0
-      kafka_broker_id: 1
-      humio_host_id: 0
-  children:
-    zookeepers:
-      hosts:
-        humio.example.com:
-    kafkas:
-      hosts:
-        humio.example.com:
-    humios:
-      hosts:
-        humio.example.com:
+humio_host_id: 0
+humio_public_url: "http://{{ ansible_default_ipv4.address }}"
+humio_socket_bind: "0.0.0.0"
+humio_http_bind: "0.0.0.0"
+zookeeper_hosts:
+- ip: "{{ ansible_default_ipv4.address }}"
+kafka_hosts:
+zookeeper_hosts:
+- ip: "{{ ansible_default_ipv4.address }}"
 ```
 
-Save it as `humio.yml` and don't forget to replace all `humio.example.com` with the actual name of your Humio hostname or IP.
+Dependencies
+------------
 
-Now deploy the Humio with
+Java must be installed. We recommend [humio.ansible-java galaxy module](https://github.com/humio/ansible-java).
 
-```bash
-$ ansible-playbook --inventory-file=humio.yml cluster.yml
+Example Playbook
+----------------
+
+Ro run a singlenode Humio instance
+
+```yaml
+- hosts: humios
+  become: true
+  roles:
+    - role: humio.ansible-java
+    - role: AnsibleShipyard.ansible-zookeeper
+    - role: humio.ansible-kafka
+    - role: humio.ansible-humio
 ```
 
-After the playbook has finished, give Humio a few moments to start up, and access it at port `8080` on the host.
+License
+-------
 
-## Deploy a Humio cluster
+Apache
 
-A real high availability has 3 or 5 Zookeeper and Kafka nodes, so make sure you have an odd number of hosts in the `zookeepers` and `kafkas` groups. Humio can run on those machines as well.
+Author Information
+------------------
 
-The [Example Inventory](example_inventory.yml) file contains an example inventory with 8 nodes in all. Grap a copy of the file and tweak it to your own setup. Finally deploy a cluster with the following command:
-
-```bash
-$ ansible-playbook --inventory-file=humio.yml cluster.yml
-```
-
-With a cluster successfully installed, we highly recommend putting a sticky http load balancer in front of Humio.
+If you're having issues with this module please to not hesitate to reach out to us on the #ansible channel on our [Slack community team](https://community.humio.com/). 

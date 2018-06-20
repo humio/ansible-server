@@ -1,0 +1,10 @@
+---
+humio_host_id: 0
+humio_public_url: "http://{{ ansible_default_ipv4.address }}"
+humio_socket_bind: "0.0.0.0"
+humio_http_bind: "0.0.0.0"
+zookeeper_hosts:
+- ip: "{{ ansible_default_ipv4.address }}"
+kafka_hosts:
+zookeeper_hosts:
+- ip: "{{ ansible_default_ipv4.address }}"
