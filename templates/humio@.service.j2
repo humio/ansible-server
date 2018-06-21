@@ -8,6 +8,8 @@
   Group=humio
   LimitNOFILE=250000:250000
   EnvironmentFile=/etc/humio/server_%i.conf
+  EnvironmentFile=/etc/humio/server_all.conf
+  EnvironmentFile=/etc/humio/server_user_%i.conf
   WorkingDirectory=/var/humio
   ExecStart=/usr/bin/java -Xss2M -XX:MaxDirectMemorySize=32G -Dhumio.auditlog.dir=${HUMIO_AUDITLOG_DIR} -Dhumio.debuglog.dir=${HUMIO_DEBUGLOG_DIR} -jar /usr/lib/humio/server-{{ humio_version }}.jar
 
