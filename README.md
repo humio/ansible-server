@@ -35,7 +35,7 @@ kafka_hosts:
 Dependencies
 ------------
 
-Java must be installed. We recommend [humio.ansible-java galaxy module](https://github.com/humio/ansible-java).
+Java must be installed. We recommend [humio.java galaxy role](https://galaxy.ansible.com/humio/java/).
 
 Example Playbook
 ----------------
@@ -46,10 +46,10 @@ Ro run a singlenode Humio instance
 - hosts: humios
   become: true
   roles:
-    - role: humio.ansible-java
+    - role: humio.java
     - role: AnsibleShipyard.ansible-zookeeper
-    - role: humio.ansible-kafka
-    - role: humio.ansible-humio
+    - role: humio.kafka
+    - role: humio.server
 ```
 
 License
