@@ -8,12 +8,9 @@ galaxy_info:
   min_ansible_version: 1.2
 
   platforms:
-  - name: Ubuntu
+  - name: EL
     versions:
-    - all
-  - name: Centos
-    versions:
-    - all
+    - 7
 
   galaxy_tags:
   - monitoring
