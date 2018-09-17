@@ -1,6 +1,9 @@
 ---
 - import_tasks: custom_facts.yml
 
+- group: name=humio system=yes
+- user: name=humio system=yes group=humio
+
 - name: Create Humio directories
   file:
     path: "{{ item }}"
@@ -8,9 +11,7 @@
   with_items:
     - /usr/lib/humio
     - /etc/humio
-
-- group: name=humio system=yes
-- user: name=humio system=yes group=humio
+    - /var/log/humio
 
 - name: Create /var/humio/data directories
   file:
@@ -18,6 +19,12 @@
     state: directory
     owner: humio
     group: humio
+  with_dict: "{{ ansible_local.cpusockets }}"
+
+- name: Humio log directories
+  file:
+    path: "/var/log/humio/{{ item.key }}/"
+    state: directory
   with_dict: "{{ ansible_local.cpusockets }}"
 
 - name: Download Humio jar
