@@ -12,20 +12,25 @@
     - /usr/lib/humio
     - /etc/humio
     - /var/log/humio
+  notify: Restart Humio
+
+- name: Create Humio directories
+  file:
+    path: "/var/log/humio/{{ item.key }}"
+    state: directory
+    owner: "humio"
+    group: "humio"
+  with_dict: "{{ ansible_local.cpusockets }}"
+  notify: Restart Humio
 
 - name: Create /var/humio/data directories
   file:
     path: /var/humio/data/{{ humio_host_id }}-{{ item.key }}
     state: directory
-    owner: humio
-    group: humio
+    owner: "humio"
+    group: "humio"
   with_dict: "{{ ansible_local.cpusockets }}"
-
-- name: Humio log directories
-  file:
-    path: "/var/log/humio/{{ item.key }}/"
-    state: directory
-  with_dict: "{{ ansible_local.cpusockets }}"
+  notify: Restart Humio
 
 - name: Download Humio jar
   get_url:
@@ -64,18 +69,12 @@
     path: "/etc/systemd/system/humio@{{ item.key }}.service.d"
     state: directory
   with_dict: "{{ ansible_local.cpusockets }}"
+  notify: Restart Humio
 
 - name: Create Humio SystemD unit configuration
   template:
     src: "cpuaffinity.conf.j2"
     dest: "/etc/systemd/system/humio@{{ item.key }}.service.d/cpuaffinity.conf"
   with_dict: "{{ ansible_local.cpusockets }}"
-
   notify: Restart Humio
 
-- name: Enable Humio service
-  service:
-    name: "humio@{{ item.key }}"
-    enabled: yes
-    state: started
-  with_dict: "{{ ansible_local.cpusockets }}"

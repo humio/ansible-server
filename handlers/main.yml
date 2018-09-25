@@ -5,6 +5,7 @@
 - service:
     name: "humio@{{ item.key }}"
     daemon_reload: yes
+    enabled: yes
     state: restarted
   listen: Restart Humio
   with_dict: "{{ ansible_local.cpusockets }}"
