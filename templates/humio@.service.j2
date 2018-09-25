@@ -4,6 +4,7 @@
   After=kafka.service
 
 [Service]
+  Type=notify
   User=humio
   Group=humio
   LimitNOFILE=250000:250000
