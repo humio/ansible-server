@@ -1,2 +1,5 @@
+[Unit]
+{% if item.key > 0 %}  After=humio@{{ item.key|int - 1}}.service{% endif %}
+
 [Service]
   CPUAffinity={{ item.value.vcpus }}
