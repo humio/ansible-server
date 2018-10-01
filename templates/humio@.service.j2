@@ -1,7 +1,6 @@
 [Unit]
   Description=Humio service
-  Requires=kafka.service
-  After=kafka.service
+  After=network.service
 
 [Service]
   Type=notify
