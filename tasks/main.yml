@@ -78,3 +78,8 @@
   with_dict: "{{ ansible_local.cpusockets }}"
   notify: Restart Humio
 
+- name: Server is running
+  service:
+      name: "humio@{{ item.key }}"
+      state: started
+  with_dict: "{{ ansible_local.cpusockets }}"
