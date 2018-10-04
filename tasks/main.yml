@@ -23,9 +23,9 @@
   with_dict: "{{ ansible_local.cpusockets }}"
   notify: Restart Humio
 
-- name: Create /var/humio/data directories
+- name: Create Humio Data directories
   file:
-    path: /var/humio/data/{{ humio_host_id }}-{{ item.key }}
+    path: "{{ humio_data_path }}/{{ humio_host_id }}-{{ item.key }}/data"
     state: directory
     owner: "humio"
     group: "humio"
@@ -81,5 +81,6 @@
 - name: Server is running
   service:
       name: "humio@{{ item.key }}"
+      enabled: yes
       state: started
   with_dict: "{{ ansible_local.cpusockets }}"

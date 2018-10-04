@@ -1,6 +1,6 @@
 #jinja2: trim_blocks:False
 BOOTSTRAP_HOST_ID={{ "%d%02d" | format(humio_host_id|int, item.key|int) }}
-DIRECTORY=/var/humio/data/{{ humio_host_id }}-{{ item.key }}
+DIRECTORY={{ humio_data_path }}/{{ humio_host_id }}-{{ item.key }}/data
 HUMIO_AUDITLOG_DIR=/var/log/humio/{{ item.key }}
 HUMIO_DEBUGLOG_DIR=/var/log/humio/{{ item.key }}
 HUMIO_PORT={{ 8080 + item.key|int }}
