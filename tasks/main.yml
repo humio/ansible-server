@@ -37,6 +37,14 @@
     url: "{{ humio_mirror }}/com/humio/server/{{ humio_version }}/server-{{ humio_version }}.jar"
     dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
   notify: Restart Humio
+  when: humio_mirror != 'master'
+
+- name: Push Humio jar
+  copy:
+    src: "server-{{ humio_version }}.jar"
+    dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
+  notify: Restart Humio
+  when: humio_mirror == 'master'
 
 - name: Humio configuration file
   template:
