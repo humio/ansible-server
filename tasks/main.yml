@@ -46,6 +46,12 @@
   notify: Restart Humio
   when: humio_mirror == 'master'
 
+- file:
+    path: "/usr/lib/humio/server-{{ humio_version }}.jar"
+    mode: 0644
+    owner: root
+    group: root
+
 - name: Humio configuration file
   template:
     src: server.conf.j2
