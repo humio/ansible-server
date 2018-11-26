@@ -8,6 +8,7 @@
   file:
     path: "{{ item }}"
     state: directory
+    mode: 0755
   with_items:
     - /usr/lib/humio
     - /etc/humio
@@ -20,6 +21,7 @@
     state: directory
     owner: "humio"
     group: "humio"
+    mode: 0750
   with_dict: "{{ ansible_local.cpusockets }}"
   notify: Restart Humio
 
@@ -29,6 +31,7 @@
     state: directory
     owner: "humio"
     group: "humio"
+    mode: 0755
   with_dict: "{{ ansible_local.cpusockets }}"
   notify: Restart Humio
 
