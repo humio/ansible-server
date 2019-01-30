@@ -4,6 +4,11 @@
 - group: name=humio system=yes
 - user: name=humio system=yes group=humio
 
+- name: install numactl
+  apt:
+    name: numactl
+    state: present
+
 - name: Create Humio directories
   file:
     path: "{{ item }}"
@@ -81,23 +86,16 @@
     dest: /etc/systemd/system/humio@.service
   notify: Restart Humio
 
-- name: SystemD template override dirs
+- name: Delete Systemd cpuaffinity override
   file:
-    path: "/etc/systemd/system/humio@{{ item.key }}.service.d"
-    state: directory
-  with_dict: "{{ ansible_local.cpusockets }}"
-  notify: Restart Humio
-
-- name: Create Humio SystemD unit configuration
-  template:
-    src: "cpuaffinity.conf.j2"
-    dest: "/etc/systemd/system/humio@{{ item.key }}.service.d/cpuaffinity.conf"
+    path: "/etc/systemd/system/humio@{{ item.key }}.service.d/cpuaffinity.conf"
+    state: absent
   with_dict: "{{ ansible_local.cpusockets }}"
   notify: Restart Humio
 
 - name: Server is running
   service:
-      name: "humio@{{ item.key }}"
-      enabled: yes
-      state: started
+    name: "humio@{{ item.key }}"
+    enabled: yes
+    state: started
   with_dict: "{{ ansible_local.cpusockets }}"
