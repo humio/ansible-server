@@ -1,6 +1,6 @@
 ---
 humio_host_id: 0
-humio_version: 1.2.9
+humio_version: 1.2.11
 humio_mirror: https://repo.humio.com/repository/maven-public
 humio_public_url: "http://{{ ansible_default_ipv4.address }}"
 humio_socket_bind: "0.0.0.0"
