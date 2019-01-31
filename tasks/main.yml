@@ -40,6 +40,17 @@
   with_dict: "{{ ansible_local.cpusockets }}"
   notify: Restart Humio
 
+- name: Create Humio secondary directories
+  file:
+    path: "{{ humio_data_secondary_path }}/{{ humio_host_id }}-{{ item.key }}/data"
+    state: directory
+    owner: "humio"
+    group: "humio"
+    mode: 0755
+  with_dict: "{{ ansible_local.cpusockets }}"
+  notify: Restart Humio
+  when: humio_data_secondary_path is defined
+
 - name: Download Humio jar
   get_url:
     url: "{{ humio_mirror }}/com/humio/server/{{ humio_version }}/server-{{ humio_version }}.jar"

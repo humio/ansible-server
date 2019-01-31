@@ -6,6 +6,8 @@ humio_public_url: "http://{{ ansible_default_ipv4.address }}"
 humio_socket_bind: "0.0.0.0"
 humio_http_bind: "0.0.0.0"
 humio_data_path: "/var/humio"
+humio_data_percentage: 80
+humio_data_secondary_path: ~
 
 zookeeper_hosts:
 - ip: "{{ ansible_default_ipv4.address }}"
