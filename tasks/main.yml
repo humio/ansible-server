@@ -110,3 +110,17 @@
     enabled: yes
     state: started
   with_dict: "{{ ansible_local.cpusockets }}"
+
+- name: Install Humioctl version {{ humioctl_version }}
+  block:
+    - file:
+        path: "/usr/lib/humio/humioctl-{{ humioctl_version }}"
+        state: directory
+    - unarchive:
+        src: "https://github.com/humio/cli/releases/download/v{{ humioctl_version }}/humioctl_{{ humioctl_version }}_Linux_64-bit.tar.gz"
+        remote_src: yes
+        dest: "/usr/lib/humio/humioctl-{{ humioctl_version }}"
+    - file:
+        src: "/usr/lib/humio/humioctl-{{ humioctl_version }}/humioctl"
+        dest: "/usr/bin/humioctl"
+        state: link
