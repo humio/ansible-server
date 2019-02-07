@@ -52,6 +52,7 @@
   when: humio_data_secondary_path is defined
 
 - name: Download Humio jar
+  tags: humio-update
   get_url:
     url: "{{ humio_mirror }}/com/humio/server/{{ humio_version }}/server-{{ humio_version }}.jar"
     dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
@@ -59,19 +60,23 @@
   when: humio_mirror != 'master'
 
 - name: Push Humio jar
+  tags: humio-update
   copy:
     src: "server-{{ humio_version }}.jar"
     dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
   notify: Restart Humio
   when: humio_mirror == 'master'
 
-- file:
+- name: Humio server jar permissions
+  tags: humio-update
+  file:
     path: "/usr/lib/humio/server-{{ humio_version }}.jar"
     mode: 0644
     owner: root
     group: root
 
 - name: Humio configuration file
+  tags: humio-conf
   template:
     src: server.conf.j2
     dest: "/etc/humio/server_{{ item.key }}.conf"
@@ -79,12 +84,14 @@
   notify: Restart Humio
 
 - name: Humio user configuration file
+  tags: humio-conf
   copy:
     content: "{{ humio_config.all | default('# Empty') }}"
     dest: "/etc/humio/server_all.conf"
   notify: Restart Humio
 
 - name: Humio user-instance configuration file
+  tags: humio-conf
   copy:
     content: "{{ humio_config[item.key] | default('# Empty') }}"
     dest: "/etc/humio/server_user_{{ item.key }}.conf"
@@ -92,6 +99,7 @@
   notify: Restart Humio
 
 - name: Create Humio SystemD template configuration
+  tags: humio-update
   template:
     src: "humio@.service.j2"
     dest: /etc/systemd/system/humio@.service
