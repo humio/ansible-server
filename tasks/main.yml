@@ -53,6 +53,7 @@
 
 - name: Download Humio jar
   tags: humio-update
+  check_mode: no
   get_url:
     url: "{{ humio_mirror }}/com/humio/server/{{ humio_version }}/server-{{ humio_version }}.jar"
     dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
@@ -61,6 +62,7 @@
 
 - name: Push Humio jar
   tags: humio-update
+  check_mode: no
   copy:
     src: "server-{{ humio_version }}.jar"
     dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
