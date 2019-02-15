@@ -17,8 +17,17 @@
   with_items:
     - /usr/lib/humio
     - /etc/humio
+    - /etc/humio/filebeat
     - /var/log/humio
   notify: Restart Humio
+
+- name: Humio Filebeat specific configuration
+  template:
+    src: filebeat.yml.j2
+    dest: /etc/humio/filebeat/humio.yml
+    mode: 0644
+    owner: root
+    group: root
 
 - name: Create Humio directories
   file:

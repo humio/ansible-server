@@ -10,6 +10,9 @@ humio_data_path: "/var/humio"
 humio_data_percentage: 80
 humio_data_secondary_path: ~
 
+humio_filebeat_fields: {}
+humio_filebeat_tags: []
+
 zookeeper_hosts:
 - ip: "{{ ansible_default_ipv4.address }}"
 kafka_hosts:
