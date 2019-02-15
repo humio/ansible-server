@@ -3,4 +3,4 @@
 humio_filebeat_default_tags:
   - "@host"
   - "@type"
-  - "@humio-node"
+  - "@humionode"
