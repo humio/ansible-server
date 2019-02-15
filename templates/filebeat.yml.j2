@@ -16,4 +16,14 @@
     pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}'
     negate: true
     match: after
+- type: log
+  paths:
+  - /var/log/humio/{{ item.key }}/gc_humio.log
+  fields:
+    '@type': 'humio-gc'
+    '@humio-node': "{{ "%d%02d" | format(humio_host_id|int, item.key|int) }}"
+    {% for field in humio_filebeat_fields|dict2items -%}
+    '{{ field.key }}': '{{ field.value }}'
+    {% endfor -%}
+    '@tags': {{ humio_filebeat_default_tags + humio_filebeat_tags  }}
 {% endfor %}
