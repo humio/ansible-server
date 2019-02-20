@@ -1,3 +1,5 @@
+[![Build Status](https://cloud.drone.io/api/badges/humio/ansible-server/status.svg)](https://cloud.drone.io/humio/ansible-server)
+
 ansible-humio
 =========
 

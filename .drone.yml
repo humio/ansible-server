@@ -1,0 +1,17 @@
+---
+
+kind: pipeline
+name: default
+
+steps:
+  - name: Update Ansible-galaxy
+    image: ansible/galaxy:3.1.6
+    environment:
+      GITHUB_TOKEN:
+        from_secret: github-token
+    commands:
+      - /var/lib/galaxy/venv/bin/ansible-galaxy login --github-token=$GITHUB_TOKEN
+      - /var/lib/galaxy/venv/bin/ansible-galaxy import humio ansible-server
+    when:
+      event:
+        - tag
