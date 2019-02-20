@@ -11,7 +11,7 @@ steps:
         from_secret: github-token
     commands:
       - /var/lib/galaxy/venv/bin/ansible-galaxy login --github-token=$GITHUB_TOKEN
-      - /var/lib/galaxy/venv/bin/ansible-galaxy import humio ansible-server
+      - /var/lib/galaxy/venv/bin/ansible-galaxy import $DRONE_REPO_NAMESPACE $DRONE_REPO_NAME
     when:
       event:
         - tag
