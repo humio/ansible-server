@@ -4,6 +4,11 @@ kind: pipeline
 name: default
 
 steps:
+  - name: Lint role
+    image: ansible/galaxy:3.1.6
+    commands:
+      - /var/lib/galaxy/venv/bin/ansible-lint .
+
   - name: Update Ansible-galaxy
     image: ansible/galaxy:3.1.6
     environment:
