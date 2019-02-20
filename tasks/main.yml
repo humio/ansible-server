@@ -1,8 +1,10 @@
 ---
 - import_tasks: custom_facts.yml
 
-- group: name=humio system=yes
-- user: name=humio system=yes group=humio
+- name: create Humio user
+  group: name=humio system=yes
+- name: create humio group
+  user: name=humio system=yes group=humio
 
 - name: install numactl
   apt:
@@ -132,14 +134,19 @@
 
 - name: Install Humioctl version {{ humioctl_version }}
   block:
-    - file:
+    - name: humioctl lib
+      file:
         path: "/usr/lib/humio/humioctl-{{ humioctl_version }}"
         state: directory
-    - unarchive:
-        src: "https://github.com/humio/cli/releases/download/v{{ humioctl_version }}/humioctl_{{ humioctl_version }}_Linux_64-bit.tar.gz"
+    - name: download and unarchive
+      unarchive:
+        src: >
+               https://github.com/humio/cli/releases/download/
+               v{{ humioctl_version }}/humioctl_{{ humioctl_version }}_Linux_64-bit.tar.gz
         remote_src: yes
         dest: "/usr/lib/humio/humioctl-{{ humioctl_version }}"
-    - file:
+    - name: link to bin
+      file:
         src: "/usr/lib/humio/humioctl-{{ humioctl_version }}/humioctl"
         dest: "/usr/bin/humioctl"
         state: link

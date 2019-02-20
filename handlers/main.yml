@@ -1,8 +1,10 @@
 ---
-- setup: ~
+- name: recollect facts
+  setup: ~
   listen: Collect facts
 
-- service:
+- name: restart all Humio instanaces
+  service:
     name: "humio@{{ item.key }}"
     daemon_reload: yes
     enabled: yes

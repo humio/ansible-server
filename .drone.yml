@@ -7,7 +7,7 @@ steps:
   - name: Lint role
     image: ansible/galaxy:3.1.6
     commands:
-      - /var/lib/galaxy/venv/bin/ansible-lint .
+      - /var/lib/galaxy/venv/bin/ansible-lint -x 405 .
 
   - name: Update Ansible-galaxy
     image: ansible/galaxy:3.1.6
