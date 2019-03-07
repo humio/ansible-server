@@ -140,9 +140,7 @@
         state: directory
     - name: download and unarchive
       unarchive:
-        src: >
-               https://github.com/humio/cli/releases/download/
-               v{{ humioctl_version }}/humioctl_{{ humioctl_version }}_Linux_64-bit.tar.gz
+        src: "https://github.com/humio/cli/releases/download/v{{ humioctl_version }}/humioctl_{{ humioctl_version }}_Linux_64-bit.tar.gz"
         remote_src: yes
         dest: "/usr/lib/humio/humioctl-{{ humioctl_version }}"
     - name: link to bin
