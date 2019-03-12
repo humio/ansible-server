@@ -3,7 +3,7 @@
   setup: ~
   listen: Collect facts
 
-- name: restart all Humio instanaces
+- name: restart all Humio instances
   service:
     name: "humio@{{ item.key }}"
     daemon_reload: yes
