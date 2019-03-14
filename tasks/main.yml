@@ -21,6 +21,7 @@
     - /etc/humio
     - /etc/humio/filebeat
     - /var/log/humio
+  check_mode: no
   notify: Restart Humio
 
 - name: Humio Filebeat specific configuration
@@ -30,6 +31,7 @@
     mode: 0644
     owner: root
     group: root
+  when: not ansible_check_mode
 
 - name: Create Humio directories
   file:
@@ -87,6 +89,7 @@
     mode: 0644
     owner: root
     group: root
+  when: not ansible_check_mode
 
 - name: Humio configuration file
   tags: humio-conf
@@ -118,13 +121,6 @@
     dest: /etc/systemd/system/humio@.service
   notify: Restart Humio
 
-- name: Delete Systemd cpuaffinity override
-  file:
-    path: "/etc/systemd/system/humio@{{ item.key }}.service.d/cpuaffinity.conf"
-    state: absent
-  with_dict: "{{ ansible_local.cpusockets }}"
-  notify: Restart Humio
-
 - name: Server is running
   service:
     name: "humio@{{ item.key }}"
@@ -138,11 +134,13 @@
       file:
         path: "/usr/lib/humio/humioctl-{{ humioctl_version }}"
         state: directory
+      check_mode: no
     - name: download and unarchive
       unarchive:
         src: "https://github.com/humio/cli/releases/download/v{{ humioctl_version }}/humioctl_{{ humioctl_version }}_Linux_64-bit.tar.gz"
         remote_src: yes
         dest: "/usr/lib/humio/humioctl-{{ humioctl_version }}"
+      check_mode: no
     - name: link to bin
       file:
         src: "/usr/lib/humio/humioctl-{{ humioctl_version }}/humioctl"

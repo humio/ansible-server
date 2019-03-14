@@ -3,6 +3,7 @@
   file:
     path: "/etc/ansible/facts.d"
     state: "directory"
+  check_mode: no
 
 - name: CPU sockets fact
   copy:
@@ -12,6 +13,7 @@
       /usr/bin/lscpu | grep '^NUMA node[0-9]' | sed -r 's/^NUMA node(.*) CPU\(s\):\s+(.*)/[\1]\nvcpus=\2\n/'
     dest: "/etc/ansible/facts.d/cpusockets.fact"
     mode: "0755"
+  check_mode: no
   notify: Collect facts
 
 - meta: flush_handlers
