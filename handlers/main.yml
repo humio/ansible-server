@@ -3,11 +3,31 @@
   setup: ~
   listen: Collect facts
 
-- name: restart all Humio instances
+- name: Set _restart_required var on before restart
+  set_fact:
+    _restart_required: True
+  listen: Restart Humio
+
+- name: Stop all Humio instances
   service:
     name: "humio@{{ item.key }}"
     daemon_reload: yes
     enabled: yes
-    state: restarted
+    state: stopped
+  loop: "{{ ansible_local.cpusockets|dict2items }}"
   listen: Restart Humio
-  with_dict: "{{ ansible_local.cpusockets }}"
+
+- name: Start all Humio instances
+  service:
+    name: "humio@{{ item.0.key }}"
+    state: started
+  loop: "{{ ansible_local.cpusockets|dict2items|product(ansible_play_batch)|list }}"
+  delegate_to: "{{ item.1 }}"
+  run_once: True
+  when: hostvars[item.1]['_restart_required'] | default(False)
+  listen: Restart Humio
+
+- name: Set _restart_required var off after restart
+  set_fact:
+    _restart_required: False
+  listen: Restart Humio

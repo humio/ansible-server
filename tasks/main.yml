@@ -121,13 +121,6 @@
     dest: /etc/systemd/system/humio@.service
   notify: Restart Humio
 
-- name: Server is running
-  service:
-    name: "humio@{{ item.key }}"
-    enabled: yes
-    state: started
-  with_dict: "{{ ansible_local.cpusockets }}"
-
 - name: Install Humioctl version {{ humioctl_version }}
   block:
     - name: humioctl lib
