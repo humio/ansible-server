@@ -25,13 +25,13 @@
   notify: Restart Humio
 
 - name: Humio Filebeat specific configuration
+  tags: monitoring
   template:
     src: filebeat.yml.j2
     dest: /etc/humio/filebeat/humio.yml
     mode: 0644
     owner: root
     group: root
-  when: not ansible_check_mode
 
 - name: Create Humio directories
   file:

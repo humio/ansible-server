@@ -11,7 +11,7 @@
     {% for field in humio_filebeat_fields|dict2items -%}
     '{{ field.key }}': '{{ field.value }}'
     {% endfor -%}
-    '@tags': {{ humio_filebeat_default_tags + humio_filebeat_tags  }}
+    '@tags': ['{{ (humio_filebeat_default_tags + humio_filebeat_tags) | list | join ('\', \'') }}']
   multiline:
     pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}'
     negate: true
@@ -25,5 +25,5 @@
     {% for field in humio_filebeat_fields|dict2items -%}
     '{{ field.key }}': '{{ field.value }}'
     {% endfor -%}
-    '@tags': {{ humio_filebeat_default_tags + humio_filebeat_tags  }}
+    '@tags': ['{{ (humio_filebeat_default_tags + humio_filebeat_tags) | list | join ('\', \'') }}']
 {% endfor %}
