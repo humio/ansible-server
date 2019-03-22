@@ -14,9 +14,7 @@
 
 - name: Start all Humio instances
   service:
-    name: "humio@{{ item.0.key }}"
+    name: "humio@{{ item.key }}"
     state: started
-  loop: "{{ ansible_local.cpusockets|dict2items|product(ansible_play_batch)|list }}"
-  delegate_to: "{{ item.1 }}"
-  run_once: True
+  loop: "{{ ansible_local.cpusockets|dict2items }}"
   listen: Restart Humio
