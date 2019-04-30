@@ -4,6 +4,7 @@
 
 [Service]
   Type=notify
+  Restart=on-abnormal
   User=humio
   Group=humio
   LimitNOFILE=250000:250000
