@@ -9,6 +9,7 @@ humio_http_bind: "0.0.0.0"
 humio_data_path: "/var/humio"
 humio_data_percentage: 80
 humio_data_secondary_path: ~
+humio_permissions: ~
 
 humio_filebeat_fields: {}
 humio_filebeat_tags: []
