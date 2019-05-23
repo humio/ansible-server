@@ -12,7 +12,7 @@
   EnvironmentFile=/etc/humio/server_all.conf
   EnvironmentFile=/etc/humio/server_user_%i.conf
   WorkingDirectory={{ humio_data_path }}/{{ humio_host_id }}-%i
-  ExecStart=/usr/bin/numactl --cpunodebind=%i --membind=%i /usr/bin/java -server -XX:+UseParallelOldGC -Xms4G -Xmx32G -XX:MaxDirectMemorySize=64G -Xss2M -Xlog:gc*,gc+jni=debug:file=${HUMIO_DEBUGLOG_DIR}/gc_humio.log:time,tags:filecount=5,filesize=102400 -Dhumio.auditlog.dir=${HUMIO_AUDITLOG_DIR} -Dhumio.debuglog.dir=${HUMIO_DEBUGLOG_DIR} -jar /usr/lib/humio/server-{{ humio_version }}.jar
+  ExecStart=/usr/bin/numactl --cpunodebind=%i --membind=%i /usr/bin/java {{ humio_java_opts | join(" ") }} -jar /usr/lib/humio/server-{{ humio_version }}.jar
 
 [Install]
   WantedBy=default.target
