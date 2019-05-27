@@ -5,6 +5,7 @@
   paths:
   - /var/log/humio/{{ item.key }}/humio-debug.log
   - /var/log/humio/{{ item.key }}/humio-threaddumps.log
+  - /var/log/humio/{{ item.key }}/humio-metrics.log
   fields:
     '@type': 'humio'
     '@humionode': "{{ "%d%02d" | format(humio_host_id|int, item.key|int) }}"
