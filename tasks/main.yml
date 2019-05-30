@@ -7,7 +7,7 @@
   user: name=humio system=yes group=humio
 
 - name: install numactl
-  apt:
+  package:
     name: numactl
     state: present
 
