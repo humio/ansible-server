@@ -126,6 +126,9 @@
   copy:
     content: "{{ humio_permissions | default('{}') }}"
     dest: "{{ humio_data_path }}/{{ humio_host_id }}-{{ item.key }}/data/view-group-permissions.json"
+    mode: 0644
+    owner: humio
+    group: humio
   with_dict: "{{ ansible_local.cpusockets }}"
 
 - name: Install Humioctl version {{ humioctl_version }}
