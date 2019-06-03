@@ -130,18 +130,6 @@
     owner: humio
     group: humio
   with_dict: "{{ ansible_local.cpusockets }}"
-  when: humio_permissions_path is undefined
-
-- name: Copy permissions
-  tags: humio-permissions
-  copy:
-    src: "{{ humio_permissions_path }}"
-    dest: "{{ humio_data_path }}/{{ humio_host_id }}-{{ item.key }}/data/view-group-permissions.json"
-    mode: 0644
-    owner: humio
-    group: humio
-  with_dict: "{{ ansible_local.cpusockets }}"
-  when: humio_permissions_path is defined
 
 - name: Install Humioctl version {{ humioctl_version }}
   block:
