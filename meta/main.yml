@@ -15,6 +15,9 @@ galaxy_info:
 
   galaxy_tags:
   - monitoring
+  - logging
+  - system
+  - humio
 
 dependencies:
   - role: humio.java
