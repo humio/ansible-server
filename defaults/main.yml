@@ -10,6 +10,7 @@ humio_data_path: "/var/humio"
 humio_data_percentage: 80
 humio_data_secondary_path: ~
 humio_permissions: ~
+humio_processes: "{{ ansible_local.numanodes | length }}"
 
 humio_java_opts_Xms: 4G
 humio_java_opts_Xmx: 32G

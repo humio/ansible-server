@@ -5,16 +5,16 @@
 
 - name: Stop all Humio instances
   service:
-    name: "humio@{{ item.key }}"
+    name: "humio@{{ item }}"
     daemon_reload: yes
     enabled: yes
     state: stopped
-  loop: "{{ ansible_local.cpusockets|dict2items }}"
+  loop: "{{ range(0, humio_processes|int)|list }}"
   listen: Restart Humio
 
 - name: Start all Humio instances
   service:
-    name: "humio@{{ item.key }}"
+    name: "humio@{{ item }}"
     state: started
-  loop: "{{ ansible_local.cpusockets|dict2items }}"
+  loop: "{{ range(0, humio_processes|int)|list }}"
   listen: Restart Humio

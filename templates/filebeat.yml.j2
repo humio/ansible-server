@@ -1,14 +1,14 @@
 ---
 
-{% for item in ansible_local.cpusockets|dict2items -%}
+{% for item in range(0, humio_processes|int)|list -%}
 - type: log
   paths:
-  - /var/log/humio/{{ item.key }}/humio-debug.log
-  - /var/log/humio/{{ item.key }}/humio-threaddumps.log
-  - /var/log/humio/{{ item.key }}/humio-metrics.log
+  - /var/log/humio/{{ item }}/humio-debug.log
+  - /var/log/humio/{{ item }}/humio-threaddumps.log
+  - /var/log/humio/{{ item }}/humio-metrics.log
   fields:
     '@type': 'humio'
-    '@humionode': "{{ "%d%02d" | format(humio_host_id|int, item.key|int) }}"
+    '@humionode': "{{ "%d%02d" | format(humio_host_id|int, item) }}"
     {% for field in humio_filebeat_fields|dict2items -%}
     '{{ field.key }}': '{{ field.value }}'
     {% endfor -%}
@@ -19,10 +19,10 @@
     match: after
 - type: log
   paths:
-  - /var/log/humio/{{ item.key }}/gc_humio.log
+  - /var/log/humio/{{ item }}/gc_humio.log
   fields:
     '@type': 'humio-gc'
-    '@humionode': "{{ "%d%02d" | format(humio_host_id|int, item.key|int) }}"
+    '@humionode': "{{ "%d%02d" | format(humio_host_id|int, item) }}"
     {% for field in humio_filebeat_fields|dict2items -%}
     '{{ field.key }}': '{{ field.value }}'
     {% endfor -%}
