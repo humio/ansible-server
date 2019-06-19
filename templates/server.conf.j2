@@ -1,17 +1,17 @@
 #jinja2: trim_blocks:False
-BOOTSTRAP_HOST_ID={{ "%d%02d" | format(humio_host_id|int, item.key|int) }}
-DIRECTORY={{ humio_data_path }}/{{ humio_host_id }}-{{ item.key }}/data
+BOOTSTRAP_HOST_ID={{ "%d%02d" | format(humio_host_id|int, item) }}
+DIRECTORY={{ humio_data_path }}/{{ humio_host_id }}-{{ item }}/data
 {%- if humio_data_secondary_path %}
 PRIMARY_STORAGE_PERCENTAGE={{ humio_data_percentage }}
-SECONDARY_DATA_DIRECTORY={{ humio_data_secondary_path }}/{{ humio_host_id }}-{{ item.key }}/data
+SECONDARY_DATA_DIRECTORY={{ humio_data_secondary_path }}/{{ humio_host_id }}-{{ item }}/data
 {%- endif %}
-HUMIO_AUDITLOG_DIR=/var/log/humio/{{ item.key }}
-HUMIO_DEBUGLOG_DIR=/var/log/humio/{{ item.key }}
-HUMIO_PORT={{ 8080 + item.key|int }}
-ELASTIC_PORT={{ 9200 + item.key|int }}
+HUMIO_AUDITLOG_DIR=/var/log/humio/{{ item }}
+HUMIO_DEBUGLOG_DIR=/var/log/humio/{{ item }}
+HUMIO_PORT={{ 8080 + item }}
+ELASTIC_PORT={{ 9200 + item }}
 ZOOKEEPER_URL={% for host in zookeeper_hosts | sort(attribute="ip") %}{{ host.ip }}:{{ host.port | default('2181') }}{% if not loop.last %},{% endif %}{% endfor %}
 KAFKA_SERVERS={% for host in kafka_hosts | sort(attribute="ip") %}{{ host.ip }}:{{ host.port | default('9092') }}{% if not loop.last %},{% endif %}{% endfor %}
-EXTERNAL_URL=http://{{ ansible_default_ipv4['address'] }}:{{ 8080 + item.key|int }}
+EXTERNAL_URL=http://{{ ansible_default_ipv4['address'] }}:{{ 8080 + item }}
 PUBLIC_URL={{ humio_public_url }}
 
 HUMIO_SOCKET_BIND={{ humio_socket_bind }}

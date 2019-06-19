@@ -35,32 +35,32 @@
 
 - name: Create Humio directories
   file:
-    path: "/var/log/humio/{{ item.key }}"
+    path: "/var/log/humio/{{ item }}"
     state: directory
     owner: "humio"
     group: "humio"
     mode: 0750
-  with_dict: "{{ ansible_local.cpusockets }}"
+  loop: "{{ range(0, humio_processes|int)|list }}"
   notify: Restart Humio
 
 - name: Create Humio Data directories
   file:
-    path: "{{ humio_data_path }}/{{ humio_host_id }}-{{ item.key }}/data"
+    path: "{{ humio_data_path }}/{{ humio_host_id }}-{{ item }}/data"
     state: directory
     owner: "humio"
     group: "humio"
     mode: 0755
-  with_dict: "{{ ansible_local.cpusockets }}"
+  loop: "{{ range(0, humio_processes|int)|list }}"
   notify: Restart Humio
 
 - name: Create Humio secondary directories
   file:
-    path: "{{ humio_data_secondary_path }}/{{ humio_host_id }}-{{ item.key }}/data"
+    path: "{{ humio_data_secondary_path }}/{{ humio_host_id }}-{{ item }}/data"
     state: directory
     owner: "humio"
     group: "humio"
     mode: 0755
-  with_dict: "{{ ansible_local.cpusockets }}"
+  loop: "{{ range(0, humio_processes|int)|list }}"
   notify: Restart Humio
   when: humio_data_secondary_path is defined
 
@@ -95,8 +95,8 @@
   tags: humio-conf
   template:
     src: server.conf.j2
-    dest: "/etc/humio/server_{{ item.key }}.conf"
-  with_dict: "{{ ansible_local.cpusockets }}"
+    dest: "/etc/humio/server_{{ item }}.conf"
+  loop: "{{ range(0, humio_processes|int)|list }}"
   notify: Restart Humio
 
 - name: Humio user configuration file
@@ -109,25 +109,26 @@
 - name: Humio user-instance configuration file
   tags: humio-conf
   copy:
-    content: "{{ humio_config[item.key] | default('# Empty') }}"
-    dest: "/etc/humio/server_user_{{ item.key }}.conf"
-  with_dict: "{{ ansible_local.cpusockets }}"
+    content: "{{ humio_config[item|string] | default('# Empty') }}"
+    dest: "/etc/humio/server_user_{{ item }}.conf"
+  loop: "{{ range(0, humio_processes|int)|list }}"
   notify: Restart Humio
 
 - name: Create Humio SystemD template configuration
   tags: humio-update
   template:
     src: "humio@.service.j2"
-    dest: /etc/systemd/system/humio@.service
+    dest: /etc/systemd/system/humio@{{ item }}.service
+  loop: "{{ range(0, humio_processes|int)|list }}"
   notify: Restart Humio
 
 - name: Copy permissions
   tags: humio-permissions
   copy:
     content: "{{ humio_permissions | default('{}') }}"
-    dest: "{{ humio_data_path }}/{{ humio_host_id }}-{{ item.key }}/data/view-group-permissions.json"
+    dest: "{{ humio_data_path }}/{{ humio_host_id }}-{{ item }}/data/view-group-permissions.json"
     mode: 0644
-  with_dict: "{{ ansible_local.cpusockets }}"
+  loop: "{{ range(0, humio_processes|int)|list }}"
 
 - name: Install Humioctl version {{ humioctl_version }}
   block:

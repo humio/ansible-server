@@ -16,4 +16,20 @@
   check_mode: no
   notify: Collect facts
 
+- name: NUMA node fact
+  copy:
+    content: |
+      #!/bin/bash
+      export LC_ALL=en_GB.UTF8
+      for socket in $(/usr/bin/lscpu --all --parse=node,socket | grep -E "[0-9]$" | cut -d, -f2 | sort | uniq); do
+        echo "[$socket]"
+        echo "nodes="$(/usr/bin/lscpu --all --parse=node,socket | grep -E "${socket}$" | cut -d, -f1 | sort -n | uniq | paste -sd ',' -)
+        echo
+      done
+    dest: "/etc/ansible/facts.d/numanodes.fact"
+    mode: "0755"
+  check_mode: no
+  notify: Collect facts
+
+
 - meta: flush_handlers
