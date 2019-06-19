@@ -109,7 +109,7 @@
 - name: Humio user-instance configuration file
   tags: humio-conf
   copy:
-    content: "{{ humio_config[item] | default('# Empty') }}"
+    content: "{{ humio_config[item|string] | default('# Empty') }}"
     dest: "/etc/humio/server_user_{{ item }}.conf"
   loop: "{{ range(0, humio_processes|int)|list }}"
   notify: Restart Humio
