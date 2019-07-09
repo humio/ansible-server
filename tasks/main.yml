@@ -118,7 +118,23 @@
   tags: humio-update
   template:
     src: "humio@.service.j2"
-    dest: /etc/systemd/system/humio@{{ item }}.service
+    dest: /etc/systemd/system/humio@.service
+  notify: Restart Humio
+
+- name: Create Humio SystemD override configuration dir
+  tags: humio-update
+  file:
+    path: /etc/systemd/system/humio@{{ item }}.service.d
+    state: directory
+  loop: "{{ range(0, humio_processes|int)|list }}"
+
+- name: Create Humio SystemD override configuration
+  tags: humio-update
+  copy:
+    content: |
+      [Service]
+      Environment=NUMA_NODES={{ ansible_local.numanodes[item|string].nodes }}
+    dest: /etc/systemd/system/humio@{{ item }}.service.d/numa.conf
   loop: "{{ range(0, humio_processes|int)|list }}"
   notify: Restart Humio
 

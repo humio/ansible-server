@@ -8,11 +8,11 @@
   User=humio
   Group=humio
   LimitNOFILE=250000:250000
-  EnvironmentFile=/etc/humio/server_{{ item }}.conf
+  EnvironmentFile=/etc/humio/server_%i.conf
   EnvironmentFile=/etc/humio/server_all.conf
-  EnvironmentFile=/etc/humio/server_user_{{ item }}.conf
-  WorkingDirectory={{ humio_data_path }}/{{ humio_host_id }}-{{ item }}
-  ExecStart=/usr/bin/numactl --cpunodebind={{ ansible_local.numanodes[item|string].nodes }} --membind={{ ansible_local.numanodes[item|string].nodes }} /usr/bin/java {{ humio_java_opts | join(" ") }} -jar /usr/lib/humio/server-{{ humio_version }}.jar
+  EnvironmentFile=/etc/humio/server_user_%i.conf
+  WorkingDirectory={{ humio_data_path }}/{{ humio_host_id }}-%i
+  ExecStart=/usr/bin/numactl --cpunodebind=${NUMA_NODES} --membind=${NUMA_NODES} /usr/bin/java {{ humio_java_opts | join(" ") }} -jar /usr/lib/humio/server-{{ humio_version }}.jar
 
 [Install]
   WantedBy=default.target
