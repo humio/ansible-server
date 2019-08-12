@@ -1,9 +1,9 @@
 ---
 - import_tasks: custom_facts.yml
 
-- name: create Humio user
+- name: create Humio group
   group: name=humio system=yes
-- name: create humio group
+- name: create humio user
   user: name=humio system=yes group=humio
 
 - name: install numactl
