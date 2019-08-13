@@ -12,16 +12,27 @@ humio_data_secondary_path: ~
 humio_permissions: ~
 humio_processes: "{{ ansible_local.numanodes | length }}"
 
-humio_java_opts_Xms: 4G
-humio_java_opts_Xmx: 32G
+# Default memory options configured for a single Humio process
+# running on a 64G machine. You can adjust the default by
+# overriding humio_total_memory or for more fine-grained control
+# you can override the humio_java_opts_* variables directly.
+# See the docs for more details about JVM memory usage:
+# https://docs.humio.com/operations-guide/configuration/basic-configuration/jvm-configuration/#java-memory-options
+humio_total_memory: 64
+humio_total_memory_per_process: "{{ (humio_total_memory|int / humio_processes|int)|int }}"
+humio_memory_allocation: "{{ (humio_total_memory_per_process|int / 4)|int }}"
+
 humio_java_opts_Xss: 2M
+humio_java_opts_Xms: "{{ humio_memory_allocation }}G"
+humio_java_opts_Xmx: "{{ humio_memory_allocation }}G"
+humio_java_opts_MaxDirectMemorySize: "{{ humio_memory_allocation }}G"
 
 humio_java_opts:
   - "-server"
   - "-XX:+UseParallelOldGC"
   - "-Xms{{ humio_java_opts_Xms }}"
   - "-Xmx{{ humio_java_opts_Xmx }}"
-  - "-XX:MaxDirectMemorySize=64G"
+  - "-XX:MaxDirectMemorySize={{ humio_java_opts_MaxDirectMemorySize }}"
   - "-Xss{{ humio_java_opts_Xss }}"
   - "-Xlog:gc*,gc+jni=debug:file=${HUMIO_DEBUGLOG_DIR}/gc_humio.log:time,tags:filecount=5,filesize=102400"
   - "-Dhumio.auditlog.dir=${HUMIO_AUDITLOG_DIR}"

@@ -20,6 +20,7 @@ humio_host_id: 0
 humio_public_url: "http://{{ ansible_default_ipv4.address }}"
 humio_socket_bind: "0.0.0.0"
 humio_http_bind: "{{ ansible_eth0.ipv4.address }}"
+humio_total_memory: 64
 humio_config:
   all: |
     AUTHENTICATION_METHOD=byproxy
@@ -33,6 +34,12 @@ zookeeper_hosts:
 kafka_hosts:
   - ip: "{{ ansible_default_ipv4.address }}"
 ```
+
+`humio_total_memory` should be the total amount of memory on the system you're installing
+Humio on. The JVM memory settings will be determined automatically based on that number
+using our [recommended formula](https://docs.humio.com/operations-guide/configuration/basic-configuration/jvm-configuration/#java-memory-options).
+If you want more fine-grained control, you can set the JVM memory options individually. See
+the `defaults/main.yml` file for which variables to override.
 
 Dependencies
 ------------
