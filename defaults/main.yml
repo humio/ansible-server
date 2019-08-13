@@ -12,11 +12,11 @@ humio_data_secondary_path: ~
 humio_permissions: ~
 humio_processes: "{{ ansible_local.numanodes | length }}"
 
-# Default memory options configured for a single Humio process
-# running on a 64G machine. You can adjust the default by
-# overriding humio_total_memory or for more fine-grained control
-# you can override the humio_java_opts_* variables directly.
-# See the docs for more details about JVM memory usage:
+# Default memory options configured for a machine with 64G of
+# memory. You can adjust the default by overriding `humio_total_memory`
+# or for more fine-grained control you can override the
+# `humio_java_opts_*` variables directly. See the docs for more details
+# about JVM memory usage:
 # https://docs.humio.com/operations-guide/configuration/basic-configuration/jvm-configuration/#java-memory-options
 humio_total_memory: 64
 humio_total_memory_per_process: "{{ (humio_total_memory|int / humio_processes|int)|int }}"
