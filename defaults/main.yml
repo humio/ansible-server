@@ -12,20 +12,21 @@ humio_data_secondary_path: ~
 humio_permissions: ~
 humio_processes: "{{ ansible_local.numanodes | length }}"
 
-# Default memory options configured for a machine with 64G of
-# memory. You can adjust the default by overriding `humio_total_memory`
-# or for more fine-grained control you can override the
-# `humio_java_opts_*` variables directly. See the docs for more details
-# about JVM memory usage:
+# By default, the amount of memory on the system is discovered by Ansible
+# and that number is used to calculate all others. You can manually set the
+# total amount in MB that will be used for that calculation by setting
+# `humio_total_memory_mb`. If you want to tweak these in a more fine-grained
+# way, you can set the `humio_java_opts_*` values individually.
+# See the docs for more details about JVM memory usage:
 # https://docs.humio.com/operations-guide/configuration/basic-configuration/jvm-configuration/#java-memory-options
-humio_total_memory: 64
-humio_total_memory_per_process: "{{ (humio_total_memory|int / humio_processes|int)|int }}"
-humio_memory_allocation: "{{ (humio_total_memory_per_process|int / 4)|int }}"
+humio_total_memory_mb: "{{ ansible_memtotal_mb|int }}"
+humio_total_memory_per_process_mb: "{{ (humio_total_memory_mb|int / humio_processes|int)|int }}"
+humio_memory_allocation_mb: "{{ (humio_total_memory_per_process_mb|int / 4)|int }}"
 
 humio_java_opts_Xss: 2M
-humio_java_opts_Xms: "{{ humio_memory_allocation }}G"
-humio_java_opts_Xmx: "{{ humio_memory_allocation }}G"
-humio_java_opts_MaxDirectMemorySize: "{{ humio_memory_allocation }}G"
+humio_java_opts_Xms: "{{ humio_memory_allocation_mb }}M"
+humio_java_opts_Xmx: "{{ humio_memory_allocation_mb }}M"
+humio_java_opts_MaxDirectMemorySize: "{{ humio_memory_allocation_mb }}M"
 
 humio_java_opts:
   - "-server"

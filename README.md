@@ -20,7 +20,6 @@ humio_host_id: 0
 humio_public_url: "http://{{ ansible_default_ipv4.address }}"
 humio_socket_bind: "0.0.0.0"
 humio_http_bind: "{{ ansible_eth0.ipv4.address }}"
-humio_total_memory: 64
 humio_config:
   all: |
     AUTHENTICATION_METHOD=byproxy
