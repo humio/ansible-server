@@ -1,6 +1,8 @@
 [Unit]
   Description=Humio service
   After=network.service
+  StartLimitInterval=120
+  StartLimitBurst=3
 
 [Service]
   Type=notify
@@ -9,6 +11,8 @@
   Group=humio
   LimitNOFILE=250000:250000
   TimeoutStopSec=300
+  TimeoutSec=900
+  Restart=always
   EnvironmentFile=/etc/humio/server_%i.conf
   EnvironmentFile=/etc/humio/server_all.conf
   EnvironmentFile=/etc/humio/server_user_%i.conf
