@@ -45,7 +45,7 @@
 
 - name: Create Humio Data directories
   file:
-    path: "{{ humio_data_path }}/{{ humio_host_id }}-{{ item }}/data"
+    path: "{{ humio_data_paths[item|string] }}/{{ humio_host_id }}-{{ item }}/data"
     state: directory
     owner: "humio"
     group: "humio"
@@ -142,7 +142,7 @@
   tags: humio-permissions
   copy:
     content: "{{ humio_permissions | default('{}') }}"
-    dest: "{{ humio_data_path }}/{{ humio_host_id }}-{{ item }}/data/view-group-permissions.json"
+    dest: "{{ humio_data_paths[item|string] }}/{{ humio_host_id }}-{{ item }}/data/view-group-permissions.json"
     mode: 0644
   loop: "{{ range(0, humio_processes|int)|list }}"
 
