@@ -20,7 +20,7 @@ humio_data_path: "/var/humio"
 #  "1": "/data/humio1"
 #
 # If you use this, then you will likely also need to update the
-# `humio_systemd_working_dir` variable below.
+# `humio_working_dir` variable below.
 humio_data_paths:
   "0": "{{ humio_data_path }}"
   "1": "{{ humio_data_path }}"
@@ -31,10 +31,10 @@ humio_data_paths:
 # if you have two partitions (`/data/humio0` and `/data/humio1`), you would set
 # this to:
 #
-# humio_systemd_working_dir: "/data/humio%i/{{ humio_host_id }}-%i"
+# humio_working_dir: "/data/humio%i/{{ humio_host_id }}-%i"
 #
 # Keeping the `/{{ humio_host_id }}-%i` bit at the end is important.
-humio_systemd_working_dir: "{{ humio_data_path }}/{{ humio_host_id }}-%i"
+humio_working_dir: "{{ humio_data_path }}/{{ humio_host_id }}-%i"
 
 humio_data_percentage: 80
 humio_data_secondary_path: ~

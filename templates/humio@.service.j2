@@ -16,7 +16,7 @@
   EnvironmentFile=/etc/humio/server_%i.conf
   EnvironmentFile=/etc/humio/server_all.conf
   EnvironmentFile=/etc/humio/server_user_%i.conf
-  WorkingDirectory={{ humio_systemd_working_dir }}
+  WorkingDirectory={{ humio_working_dir }}
   ExecStart=/usr/bin/numactl --cpunodebind=${NUMA_NODES} --membind=${NUMA_NODES} /usr/bin/java {{ humio_java_opts | join(" ") }} -jar /usr/lib/humio/server-{{ humio_version }}.jar
 
 [Install]
