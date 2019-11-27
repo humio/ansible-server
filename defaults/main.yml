@@ -7,6 +7,35 @@ humio_public_url: "http://{{ ansible_default_ipv4.address }}"
 humio_socket_bind: "0.0.0.0"
 humio_http_bind: "0.0.0.0"
 humio_data_path: "/var/humio"
+
+# This exists for specific situations where someone may have different
+# base locations for each Humio process running on the system. Under
+# most conditions this can be left at the defaults where it simply mirrors
+# `humio_data_path` – which is typically a single directory that both
+# processes have as a shared base directory. For example, if you have
+# two partitions (`/data/humio0` and `/data/humio1`), you would set this to:
+#
+# humio_data_paths:
+#  "0": "/data/humio0"
+#  "1": "/data/humio1"
+#
+# If you use this, then you will likely also need to update the
+# `humio_working_dir` variable below.
+humio_data_paths:
+  "0": "{{ humio_data_path }}"
+  "1": "{{ humio_data_path }}"
+
+# This will typically only be modified in situations where humio_data_paths
+# is also modified. When working with this, use `%i` to represent the Humio
+# process number (generally this will evaluate to either 0 or 1). For example,
+# if you have two partitions (`/data/humio0` and `/data/humio1`), you would set
+# this to:
+#
+# humio_working_dir: "/data/humio%i/{{ humio_host_id }}-%i"
+#
+# Keeping the `/{{ humio_host_id }}-%i` bit at the end is important.
+humio_working_dir: "{{ humio_data_path }}/{{ humio_host_id }}-%i"
+
 humio_data_percentage: 80
 humio_data_secondary_path: ~
 humio_permissions: ~
