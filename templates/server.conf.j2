@@ -5,6 +5,10 @@ DIRECTORY={{ humio_data_paths[item|string] }}/{{ humio_host_id }}-{{ item }}/dat
 PRIMARY_STORAGE_PERCENTAGE={{ humio_data_percentage }}
 SECONDARY_DATA_DIRECTORY={{ humio_data_secondary_path }}/{{ humio_host_id }}-{{ item }}/data
 {%- endif %}
+{%- if humio_cache_path %}
+CACHE_STORAGE_DIRECTORY={{ humio_cache_path }}
+CACHE_STORAGE_PERCENTAGE={{ humio_cache_percentage }}
+{%- endif %}
 HUMIO_AUDITLOG_DIR=/var/log/humio/{{ item }}
 HUMIO_DEBUGLOG_DIR=/var/log/humio/{{ item }}
 HUMIO_PORT={{ 8080 + item }}
