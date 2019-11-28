@@ -64,6 +64,17 @@
   notify: Restart Humio
   when: humio_data_secondary_path is defined
 
+- name: Create Humio cache directories
+  file:
+    path: "{{ humio_cache_path }}/{{ humio_host_id }}-{{ item }}"
+    state: directory
+    owner: "humio"
+    group: "humio"
+    mode: 0755
+  loop: "{{ range(0, humio_processes|int)|list }}"
+  notify: Restart Humio
+  when: humio_cache_path is defined
+
 - name: Download Humio jar
   tags: humio-update
   check_mode: no
