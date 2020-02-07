@@ -8,6 +8,9 @@ humio_socket_bind: "0.0.0.0"
 humio_http_bind: "0.0.0.0"
 humio_data_path: "/var/humio"
 
+#check for ephermal setting, will force bootstrap id not to be written
+humio_ephemeral: false
+
 # This exists for specific situations where someone may have different
 # base locations for each Humio process running on the system. Under
 # most conditions this can be left at the defaults where it simply mirrors
