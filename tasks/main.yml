@@ -75,6 +75,13 @@
   notify: Restart Humio
   when: humio_cache_path is defined
 
+- name: Check Humio jar
+  tags: humio-update
+  check_mode: no
+  stat:
+    path: "/usr/lib/humio/server-{{ humio_version }}.jar"
+  register: humio_version_check
+
 - name: Download Humio jar
   tags: humio-update
   check_mode: no
@@ -82,7 +89,7 @@
     url: "{{ humio_mirror }}/com/humio/server/{{ humio_version }}/server-{{ humio_version }}.jar"
     dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
   notify: Restart Humio
-  when: humio_mirror != 'master'
+  when: humio_mirror != 'master' and not humio_version_check.stat.exists
 
 - name: Push Humio jar
   tags: humio-update
@@ -91,7 +98,7 @@
     src: "server-{{ humio_version }}.jar"
     dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
   notify: Restart Humio
-  when: humio_mirror == 'master'
+  when: humio_mirror != 'master' and not humio_version_check.stat.exists
 
 - name: Humio server jar permissions
   tags: humio-update
@@ -189,3 +196,4 @@
         src: "/usr/lib/humio/humioctl-{{ humioctl_version }}/humioctl"
         dest: "/usr/bin/humioctl"
         state: link
+  when: skip_humio_ctl_install is not defined
