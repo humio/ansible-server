@@ -98,7 +98,7 @@
     src: "server-{{ humio_version }}.jar"
     dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
   notify: Restart Humio
-  when: humio_mirror != 'master' and not humio_version_check.stat.exists
+  when: humio_mirror == 'master
 
 - name: Humio server jar permissions
   tags: humio-update
