@@ -48,7 +48,7 @@ Java must be installed. We recommend [humio.java galaxy role](https://galaxy.ans
 Example Playbook
 ----------------
 
-Ro run a singlenode Humio instance
+Go run a singlenode Humio instance
 
 ```yaml
 - hosts: humios
