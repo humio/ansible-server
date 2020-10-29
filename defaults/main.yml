@@ -40,10 +40,10 @@ humio_data_paths:
 humio_working_dir: "{{ humio_data_path }}/{{ humio_host_id }}-%i"
 
 humio_data_percentage: 80
-#humio_data_secondary_path: ~
+humio_data_secondary_path: ~
 
-#humio_cache_percentage: 90
-#humio_cache_path: ~
+humio_cache_percentage: 90
+humio_cache_path: ~
 
 humio_permissions: ~
 humio_processes: "{{ ansible_local.numanodes | length }}"
