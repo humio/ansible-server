@@ -1,0 +1,74 @@
+---
+- import_tasks: custom_facts.yml
+
+- name: Check Humio jar
+  tags: humio-update
+  check_mode: no
+  stat:
+    path: "/usr/lib/humio/server-{{ humio_version }}.jar"
+  register: humio_version_check
+
+- name: Download Humio jar
+  tags: humio-update
+  check_mode: no
+  get_url:
+    url: "{{ humio_mirror }}/com/humio/server/{{ humio_version }}/server-{{ humio_version }}.jar"
+    dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
+  notify: Restart Humio
+  when: humio_mirror != 'master' and not humio_version_check.stat.exists
+
+- name: Push Humio jar
+  tags: humio-update
+  check_mode: no
+  copy:
+    src: "server-{{ humio_version }}.jar"
+    dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
+  notify: Restart Humio
+  when: humio_mirror == 'master'
+
+- name: Humio server jar permissions
+  tags: humio-update
+  file:
+    path: "/usr/lib/humio/server-{{ humio_version }}.jar"
+    mode: 0644
+    owner: root
+    group: root
+  when: not ansible_check_mode
+
+- name: Create Humio SystemD template configuration
+  tags: humio-update
+  template:
+    src: "humio@.service.j2"
+    dest: /etc/systemd/system/humio@.service
+  notify: Restart Humio
+
+- name: Create Humio SystemD override configuration dir
+  tags: humio-update
+  file:
+    path: /etc/systemd/system/humio@{{ item }}.service.d
+    state: directory
+  loop: "{{ range(0, humio_processes|int)|list }}"
+
+- name: Create Humio SystemD override configuration
+  tags: humio-update
+  copy:
+    content: |
+      [Service]
+      Environment=NUMA_NODES={{ ansible_local.numanodes[item|string].nodes }}
+    dest: /etc/systemd/system/humio@{{ item }}.service.d/numa.conf
+  loop: "{{ range(0, humio_processes|int)|list }}"
+  notify: Restart Humio
+
+# This needs to stay in place for anyone who performed a run
+# using version 0.2.19, 0.2.20, or 0.2.21 and is now performing
+# a run with 0.3.0+. Those versions dropped non-template unit
+# files for Humio that will cause issues on newer versions that
+# have switched back to using a systemd unit template file. This
+# will be a no-op on systems where these files don't exist.
+- name: Cleanup old, defunct SystemD unit files
+  tags: humio-update
+  file:
+    path: /etc/systemd/system/humio@{{ item }}.service
+    state: absent
+  loop: "{{ range(0, humio_processes|int)|list }}"
+  notify: Restart Humio
