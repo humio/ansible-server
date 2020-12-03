@@ -11,6 +11,7 @@
     state: stopped
   loop: "{{ range(0, humio_processes|int)|list }}"
   listen: Restart Humio
+  when: humio_upgrade is not defined
 
 - name: Start all Humio instances
   service:
@@ -18,3 +19,33 @@
     state: started
   loop: "{{ range(0, humio_processes|int)|list }}"
   listen: Restart Humio
+  when: humio_upgrade is not defined
+
+- name:  Restart Humio service
+  throttle: "{{ deploy_concurrency | int }}"
+  service:
+    name: "humio@{{ item }}"
+    state: restarted
+    daemon_reload: yes
+  loop: "{{ range(0, humio_processes|int)|list }}"
+  listen: Restart Humio
+  when: humio_upgrade is defined and humio_shutdown == false
+
+- name:  Stop all Humio instances - upgrade mode
+  service:
+    name: "humio@{{ item }}"
+    state: restarted
+    daemon_reload: yes
+  loop: "{{ range(0, humio_processes|int)|list }}"
+  listen: Restart Humio
+  when: humio_upgrade is defined and humio_shutdown == true
+
+- name:  Started all Humio instances - upgrade mode
+  service:
+    name: "humio@{{ item }}"
+    state: restarted
+    daemon_reload: yes
+  loop: "{{ range(0, humio_processes|int)|list }}"
+  listen: Restart Humio
+  when: humio_upgrade is defined and humio_shutdown == true
+

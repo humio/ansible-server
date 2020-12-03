@@ -1,5 +1,5 @@
 ---
-
+shutdown_humio: false
 humio_filebeat_default_tags:
   - "@host"
   - "@type"
