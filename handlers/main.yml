@@ -29,7 +29,7 @@
     daemon_reload: yes
   loop: "{{ range(0, humio_processes|int)|list }}"
   listen: Restart Humio
-  when: humio_upgrade is defined and humio_shutdown == false
+  when: humio_upgrade is defined and not humio_shutdown
 
 - name:  Stop all Humio instances - upgrade mode
   service:
@@ -38,7 +38,7 @@
     daemon_reload: yes
   loop: "{{ range(0, humio_processes|int)|list }}"
   listen: Restart Humio
-  when: humio_upgrade is defined and humio_shutdown == true
+  when: humio_upgrade is defined and humio_shutdown
 
 - name:  Started all Humio instances - upgrade mode
   service:
@@ -47,5 +47,4 @@
     daemon_reload: yes
   loop: "{{ range(0, humio_processes|int)|list }}"
   listen: Restart Humio
-  when: humio_upgrade is defined and humio_shutdown == true
-
+  when: humio_upgrade is defined and not humio_shutdown
