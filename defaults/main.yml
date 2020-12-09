@@ -83,3 +83,6 @@ zookeeper_hosts:
 kafka_hosts:
 - ip: "{{ ansible_default_ipv4.address }}"
 humio_config: {}
+
+
+deploy_concurrency: 1
