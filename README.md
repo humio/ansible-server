@@ -61,9 +61,9 @@ Ro run a singlenode Humio instance
 License
 -------
 
-Apache
+Apache 2.0
 
 Author Information
 ------------------
 
-If you're having issues with this module please to not hesitate to reach out to us on the #ansible channel on our [Slack community team](https://community.humio.com/). 
+If you're having issues with this module please to not hesitate to reach out to us on the #ansible channel on our [Slack community team](https://community.humio.com/).
