@@ -6,6 +6,7 @@
   - /var/log/humio/{{ item }}/humio-debug.log
   - /var/log/humio/{{ item }}/humio-threaddumps.log
   - /var/log/humio/{{ item }}/humio-metrics.log
+  - /var/log/humio/{{ item }}/humio-activity.log
   fields:
     '@type': 'humio'
     '@humionode': "{{ "%d%02d" | format(humio_host_id|int, item) }}"
