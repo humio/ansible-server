@@ -3,10 +3,13 @@
 {% for item in range(0, humio_processes|int)|list -%}
 - type: log
   paths:
-  - /var/log/humio/{{ item }}/humio-debug.log
-  - /var/log/humio/{{ item }}/humio-threaddumps.log
-  - /var/log/humio/{{ item }}/humio-metrics.log
   - /var/log/humio/{{ item }}/humio-activity.log
+  - /var/log/humio/{{ item }}/humio-audit.log
+  - /var/log/humio/{{ item }}/humio-debug.log
+  - /var/log/humio/{{ item }}/humio-metrics.log
+  - /var/log/humio/{{ item }}/humio-non-sensitive.log
+  - /var/log/humio/{{ item }}/humio-requests.log
+  - /var/log/humio/{{ item }}/humio-threaddumps.log
   fields:
     '@type': 'humio'
     '@humionode': "{{ "%d%02d" | format(humio_host_id|int, item) }}"
