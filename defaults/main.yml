@@ -85,3 +85,5 @@ kafka_hosts:
 humio_config: {}
 
 deploy_concurrency: 1
+
+humio_disable_numactl: false

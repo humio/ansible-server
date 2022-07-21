@@ -138,6 +138,15 @@
     src: "humio@.service.j2"
     dest: /etc/systemd/system/humio@.service
   notify: Restart Humio
+  when: not humio_disable_numactl
+
+- name: Create Humio SystemD template configuration
+  tags: humio-update
+  template:
+    src: "humio@.service.j2"
+    dest: /etc/systemd/system/humio.service
+  notify: Restart Humio
+  when: humio_disable_numactl
 
 - name: Create Humio SystemD override configuration dir
   tags: humio-update
