@@ -22,7 +22,3 @@ galaxy_info:
   - logging
   - system
   - humio
-
-dependencies:
-  - role: humio.java
-    version: 0.6.1

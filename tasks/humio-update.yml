@@ -1,39 +1,57 @@
 ---
 - import_tasks: custom_facts.yml
 
-- name: Check Humio jar
+- name: Check Humio tar
   tags: humio-update
   check_mode: no
   stat:
-    path: "/usr/lib/humio/server-{{ humio_version }}.jar"
+    path: "/usr/lib/humio/{{ humio_tar_prefix }}-{{ humio_version }}.tar.gz
   register: humio_version_check
 
-- name: Download Humio jar
+- name: Download Humio tar
   tags: humio-update
   check_mode: no
   get_url:
-    url: "{{ humio_mirror }}/com/humio/server/{{ humio_version }}/server-{{ humio_version }}.jar"
-    dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
+    url: "{{ humio_mirror }}/com/humio/{{ humio_tar_prefix }}/{{ humio_version }}/{{ humio_tar_prefix }}-{{ humio_version }}.tar.gz"
+    dest: "/usr/lib/humio/{{ humio_tar_prefix }}-{{ humio_version }}.tar.gz
   notify: Restart Humio
   when: humio_mirror != 'master' and not humio_version_check.stat.exists
 
-- name: Push Humio jar
+- name: Push Humio tar
   tags: humio-update
   check_mode: no
   copy:
-    src: "server-{{ humio_version }}.jar"
-    dest: "/usr/lib/humio/server-{{ humio_version }}.jar"
+    src: "{{ humio_tar_prefix }}-{{ humio_version }}.tar.gz
+    dest: "/usr/lib/humio/{{ humio_tar_prefix }}-{{ humio_version }}.tar.gz
   notify: Restart Humio
   when: humio_mirror == 'master'
 
-- name: Humio server jar permissions
+- name: Humio server tar permissions
   tags: humio-update
   file:
-    path: "/usr/lib/humio/server-{{ humio_version }}.jar"
+    path: "/usr/lib/humio/{{ humio_tar_prefix }}-{{ humio_version }}.tar.gz
     mode: 0644
     owner: root
     group: root
   when: not ansible_check_mode
+
+- name: Create directory to extract tar into
+  ansible.builtin.file:
+    dest: "/usr/lib/humio/{{ humio_version }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Unpack Humio tar
+  ansible.builtin.unarchive:
+    src:  /usr/lib/humio/{{humio_tar_prefix}}-{{ humio_version }}.tar.gz
+    dest: /usr/lib/humio/{{ humio_version }}
+    remote_src: yes
+    extra_opts:
+      - --no-same-owner
+      - --strip-components
+      - 1
 
 - name: Create Humio SystemD template configuration
   tags: humio-update

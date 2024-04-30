@@ -38,23 +38,20 @@ based on that number using our [recommended formula](https://docs.humio.com/oper
 If you want more fine-grained control, you can set the JVM memory options individually. See
 the `defaults/main.yml` file for which variables to override.
 
-Dependencies
-------------
-
-Java must be installed. We recommend [humio.java galaxy role](https://galaxy.ansible.com/humio/java/).
-
 Example Playbook
 ----------------
 
-Ro run a singlenode Humio instance
+To run a singlenode Humio instance pointing to existing zookeeper and kafka instances.
 
 ```yaml
 - hosts: humios
   become: true
+  vars:
+    kafka_hosts:
+      - ip: "172.17.0.2"
+    zookeeper_hosts:
+      - ip: "172.17.0.2"
   roles:
-    - role: humio.java
-    - role: AnsibleShipyard.ansible-zookeeper
-    - role: humio.kafka
     - role: humio.server
 ```
 

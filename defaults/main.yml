@@ -1,12 +1,14 @@
 ---
 humio_host_id: 0
-humio_version: 1.38.1
+humio_version: 1.142.0
 humioctl_version: 0.27.0
 humio_mirror: https://repo.humio.com/repository/maven-public
 humio_public_url: "http://{{ ansible_default_ipv4.address }}"
 humio_socket_bind: "0.0.0.0"
 humio_http_bind: "0.0.0.0"
 humio_data_path: "/var/humio"
+# Alternative is server-alpine_x64
+humio_tar_prefix: "server-linux_x64"
 
 #check for ephermal setting, will force bootstrap id not to be written
 humio_ephemeral: false
