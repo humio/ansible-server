@@ -1,6 +1,9 @@
 ansible-humio
 =========
 
+DEPRECATED. This repo will no longer get any updates.
+Please consider using humio-operator to install and manage Logscale https://library.humio.com/falcon-logscale-self-hosted/installation-containers-kubernetes.html.
+
 Installer for Humio.
 Current features
 - Launch one Humio instance per CPU socket
