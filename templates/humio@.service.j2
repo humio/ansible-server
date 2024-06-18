@@ -17,7 +17,7 @@
   EnvironmentFile=/etc/humio/server_all.conf
   EnvironmentFile=/etc/humio/server_user_%i.conf
   WorkingDirectory={{ humio_working_dir }}
-  ExecStart=/usr/bin/numactl --cpunodebind=${NUMA_NODES} --membind=${NUMA_NODES} /usr/bin/java {{ humio_java_opts | join(" ") }} -jar /usr/lib/humio/server-{{ humio_version }}.jar
+  ExecStart=/usr/bin/numactl --cpunodebind=${NUMA_NODES} --membind=${NUMA_NODES} /usr/lib/humio/{{ humio_version }}/bin/humio-server-start.sh
 
 [Install]
   WantedBy=default.target

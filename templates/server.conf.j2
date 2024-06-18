@@ -18,7 +18,7 @@ HUMIO_PORT={{ 8080 + item }}
 ELASTIC_PORT={{ 9200 + item }}
 ZOOKEEPER_URL={% for host in zookeeper_hosts | sort(attribute="ip") %}{{ host.ip }}:{{ host.port | default('2181') }}{% if not loop.last %},{% endif %}{% endfor %}
 KAFKA_SERVERS={% for host in kafka_hosts | sort(attribute="ip") %}{{ host.ip }}:{{ host.port | default('9092') }}{% if not loop.last %},{% endif %}{% endfor %}
-EXTERNAL_URL=http://{{ ansible_default_ipv4['address'] }}:{{ 8080 + item }}
+EXTERNAL_URL=http://{{ ansible_default_ipv4.address }}:{{ 8080 + item }}
 PUBLIC_URL={{ humio_public_url }}
 
 HUMIO_SOCKET_BIND={{ humio_socket_bind }}
